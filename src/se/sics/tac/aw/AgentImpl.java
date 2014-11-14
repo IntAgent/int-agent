@@ -95,4 +95,6 @@ public abstract class AgentImpl {
 		     15000);
   }
 
+  public abstract void dispatch(int quantity, int auction);
+
 } // AgentImpl

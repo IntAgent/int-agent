@@ -654,6 +654,10 @@ public class TACAgent implements Task, TACMessageReceiver {
     // The id that the agent gets for auctions is always 0 - 27
     return owns[auctionID];
   }
+  
+  public int[] getOwns() {
+	  return owns;
+  }
 
     // What might be owned in addition  to "getOwn"
   public int getProbablyOwn(int auctionID) {
@@ -1281,6 +1285,12 @@ public class TACAgent implements Task, TACMessageReceiver {
 	if (status == NO_ERROR) {
 	  Transaction trans = new Transaction(auction, quantity, price);
 	  owns[auction] += quantity;
+	  
+	  //TODO clean this up
+	  log.fine("****** ADDING " + quantity + " TO AUCTION " + auction);
+	  agent.dispatch(quantity, auction);
+	  //-----
+	  
 	  costs[auction] += quantity * price;
 	  try {
 	    if (tableModel != null) {

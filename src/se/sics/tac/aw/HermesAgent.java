@@ -1,5 +1,6 @@
 package se.sics.tac.aw;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import se.sics.tac.aw.handlers.EntertainmentHandler;
@@ -13,6 +14,8 @@ public class HermesAgent extends AgentImpl {
 	private Handler entHandler;
 	private Handler flightHandler;
 	private PackageConstructor packageConstructor;
+	private PackageSet packageSet;
+	//TODO int[] hotelsclosed = new int[8];
 	
 	private static final Logger log =
 			    Logger.getLogger(HermesAgent.class.getName());
@@ -26,13 +29,23 @@ public class HermesAgent extends AgentImpl {
 		entHandler = new EntertainmentHandler(agent);
 		flightHandler = new FlightHandler(agent);
 		packageConstructor = new PackageConstructor(agent);
+		packageSet = new PackageSet(agent);
 	  }
 	  
 	  public void calculateAllocation() {
 		  
 		// For each of the eight clients
-		for (int i = 0; i < 8; i++) {
-			packageConstructor.makePackage(i);
+		for (int i = 0 ; i < 8 ; i++) {
+			
+			// Create a package
+			packageSet.set(i, packageConstructor.makePackage(i));
+			
+			// Add every element of the package to the list of things we need to get
+			for (int j=0 ; j < packageSet.get(i).size() ; j++) {
+				int[] element = packageSet.get(i).get(j);
+				int auction = agent.getAuctionFor(element[0], element[1], element[2]);
+				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
+			}
 		}
 		
 	  }
@@ -105,6 +118,15 @@ public class HermesAgent extends AgentImpl {
 			     + bid.getAuction() + " state="
 			     + bid.getProcessingStateAsString());
 		    log.fine("       Hash: " + bid.getBidHash());
+		    
+	  }
+	  
+	 public void dispatch(int nbToDispatch, int auction) {
+		log.fine("**** Dispatching " + nbToDispatch + " tickets of auction " + auction);
+	    
+		Thread t = new Thread(new ResourceDispatcher(agent, packageSet, nbToDispatch, auction));
+		t.start();
+
 	  }
 
 	  public void bidRejected(Bid bid) {
@@ -120,10 +142,57 @@ public class HermesAgent extends AgentImpl {
 
 	  public void gameStopped() {
 		    log.fine("Game Stopped!");
+		    
+		    // Displays the final packages we obtained in the log
+		    String res = "Final results: \n";
+		    for (int c=1 ; c <= 8 ; c++){
+			    res += "Client " + c + ":\n";
+			    
+			    List<int[]> elements = packageSet.get(c-1).getObtainedElements();
+			    for (int i=0 ; i < elements.size() ; i++) {
+			    	int auction = agent.getAuctionFor(elements.get(i)[0],elements.get(i)[1],elements.get(i)[2]);
+			    	res += agent.getAuctionTypeAsString(auction) + "\n";
+			    }
+			    
+			    res += "-------\n";
+			    
+			    log.fine(res);
+		    }
 		  }
 
-		  public void auctionClosed(int auction) {
+	  public void auctionClosed(int auction) {
 		    log.fine("*** Auction " + auction + " closed!");
+		    
+		    //TODO update hotelsClosed
+		    
+		    /*//TODO clean this but the part with the "Oh no!" could still be useful
+		    int oldNb = oldOwns[auction];
+		    int newNb = agent.getOwn(auction);
+		    
+		    int nbToDispatch = newNb - oldNb;
+		    
+		    for(int i=0 ; i < packageList.length ; i++){
+		    	
+		    	int id = packageList[i].findId(agent.getAuctionCategory(auction), agent.getAuctionType(auction), agent.getAuctionDay(auction));
+		    	
+		    	//If the client wanted one
+		    	if (id > 0) {
+		    		//And if we got some :D
+		    		if (packageList[i].get(id)[3] == 0 && nbToDispatch > 0) {
+		    			packageList[i].get(id)[3] = 1;
+		    			nbToDispatch--;
+		    			log.fine("Yay! Client " + i + "wanted one and got it :)");
+		    		}
+		    		//And if we didn't get enough for him
+		    		else if (packageList[i].get(id)[3] == 0) {
+		    			log.fine("Oh no! Client " + i + "wanted one and didn't win :(");
+		    			//TODO for all those who couldn't get it: PackageConstructor(client, currentPackage, hotelsClosed)
+		    		}
+		    	}
+		    }
+		    
+		    System.arraycopy(agent.getOwns(), 0, oldOwns, 0, agent.getAuctionNo());
+		    */
 		  }
 		
 	  public void quoteUpdated(int auctionCategory) {
@@ -131,4 +200,8 @@ public class HermesAgent extends AgentImpl {
 			     + agent.auctionCategoryToString(auctionCategory)
 			     + " has been updated");
 		  }
+	  
+	  public static void addToLog(String msg) {
+		  log.fine(msg);
+	  }
 }

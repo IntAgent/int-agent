@@ -19,7 +19,7 @@ public class FlightHandler extends Handler {
 	      float price = -1f;
 	      
 			if (alloc > 0) {
-				  price = 1000;
+				  price = 850;
 				}
 		
 	      if (price > 0) {
