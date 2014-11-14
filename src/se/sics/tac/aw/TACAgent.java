@@ -1286,9 +1286,9 @@ public class TACAgent implements Task, TACMessageReceiver {
 	  Transaction trans = new Transaction(auction, quantity, price);
 	  owns[auction] += quantity;
 	  
-	  //TODO clean this up
+	  //Dispatching of the quantity between the packages
 	  log.fine("****** ADDING " + quantity + " TO AUCTION " + auction);
-	  agent.dispatch(quantity, auction);
+	  if (quantity > 0) { agent.dispatch(quantity, auction); }
 	  //-----
 	  
 	  costs[auction] += quantity * price;

@@ -32,7 +32,7 @@ public class PackageSet {
 	    			
 	    			packageList[i].get(id)[3] = 1;
 	    			nbToDispatch--;
-	    			HermesAgent.addToLog("Yay! Client " + i + " wanted " + agent.getAuctionTypeAsString(auction) + " (" + auction +") and got it");
+	    			HermesAgent.addToLog("Yay! Client " + (i+1) + " wanted " + agent.getAuctionTypeAsString(auction) + " (" + auction +") and got it");
 	    		}
 	    	}
 	    	

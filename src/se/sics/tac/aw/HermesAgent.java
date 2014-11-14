@@ -70,6 +70,7 @@ public class HermesAgent extends AgentImpl {
 		log.fine("Game " + agent.getGameID() + " started!");
 		
 	    calculateAllocation();
+	    dispatchDefaultEntertainment();
 	    sendBids();
 	  }
 
@@ -121,10 +122,27 @@ public class HermesAgent extends AgentImpl {
 		    
 	  }
 	  
+	 public void dispatchDefaultEntertainment() {
+		int[] type = {agent.TYPE_ALLIGATOR_WRESTLING, agent.TYPE_AMUSEMENT, agent.TYPE_MUSEUM};
+		int[] day = {1, 2, 3, 4};
+		int nbOwned;
+		int auction;
+		for (int i=0 ; i < type.length ; i++) {
+			for (int j=0 ; j < day.length ; j++) {
+				auction = agent.getAuctionFor(agent.CAT_ENTERTAINMENT, type[i], day[j]);
+				nbOwned = agent.getOwn(auction);
+				if (nbOwned > 0) {
+					dispatch(nbOwned, auction);
+				}
+			}
+		}
+		
+	 }
+	 
 	 public void dispatch(int nbToDispatch, int auction) {
 		log.fine("**** Dispatching " + nbToDispatch + " tickets of auction " + auction);
 	    
-		Thread t = new Thread(new ResourceDispatcher(agent, packageSet, nbToDispatch, auction));
+		Thread t = new Thread(new ResourceDispatcher(packageSet, nbToDispatch, auction));
 		t.start();
 
 	  }
@@ -146,6 +164,7 @@ public class HermesAgent extends AgentImpl {
 		    // Displays the final packages we obtained in the log
 		    String res = "Final results: \n";
 		    for (int c=1 ; c <= 8 ; c++){
+		    	
 			    res += "Client " + c + ":\n";
 			    
 			    List<int[]> elements = packageSet.get(c-1).getObtainedElements();
@@ -155,10 +174,10 @@ public class HermesAgent extends AgentImpl {
 			    }
 			    
 			    res += "-------\n";
-			    
-			    log.fine(res);
 		    }
-		  }
+		    
+		    log.fine(res);
+	  }
 
 	  public void auctionClosed(int auction) {
 		    log.fine("*** Auction " + auction + " closed!");

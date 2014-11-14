@@ -5,13 +5,11 @@ package se.sics.tac.aw;
  */
 public class ResourceDispatcher implements Runnable {
 
-	private TACAgent agent;
 	private PackageSet packageSet;
 	private int nbToDispatch;
 	private int auction;
 	
-	public ResourceDispatcher(TACAgent agent, PackageSet packageSet, int nbToDispatch, int auction) {
-			this.agent = agent;
+	public ResourceDispatcher(PackageSet packageSet, int nbToDispatch, int auction) {
 			this.packageSet = packageSet;
 			this.nbToDispatch = nbToDispatch;
 			this.auction = auction;
