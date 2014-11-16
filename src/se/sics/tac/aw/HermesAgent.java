@@ -17,6 +17,7 @@ public class HermesAgent extends AgentImpl {
 	private PackageConstructor packageConstructor;
 	private PackageSet packageSet;
 	private int[] hotelsClosed = new int[8];
+	private int[] spareResources = new int[28];
 	
 	private static final Logger log =
 			    Logger.getLogger(HermesAgent.class.getName());
@@ -33,7 +34,15 @@ public class HermesAgent extends AgentImpl {
 		packageSet = new PackageSet(agent);
 	  }
 	  
-	  public Package createBestPackage(int client, int[] whatWeHave) {
+	  private void fillInitialSpareResources(){
+		  //Fill the spareResources with initial Entertainement tickets
+		  for (int i=16; i <= 27 ; i++){
+			  spareResources[i] = agent.getOwn(i);
+		  }
+		  log.fine("SpareResources: " + Arrays.toString(spareResources));
+	  }
+	  
+	  private Package createBestPackage(int client, int[] whatWeHave) {
 		  
 		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave);
 		  int bestUtility = bestPackage.getUtility();
@@ -51,7 +60,7 @@ public class HermesAgent extends AgentImpl {
 		  return bestPackage;
 	  }
 	  
-	  public int[] makeWhatWeHaveVector(int client) {
+	  private int[] makeWhatWeHaveVector(int client) {
 			
 			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			for (int j=0 ; j < agent.getAuctionNo() ; j++){
@@ -62,6 +71,10 @@ public class HermesAgent extends AgentImpl {
 					if (hotelsClosed[j-8] == 1){
 						whatWeHave[j] = -1;
 					}
+				}
+				
+				if (spareResources[j] > 0){
+					whatWeHave[j] = 1;
 				}
 				
 				//if the client already has one, it overwrites the fact the auction was closed
@@ -99,6 +112,15 @@ public class HermesAgent extends AgentImpl {
 			}
 			res += "-------\n";
 			log.fine(res);
+			
+			//Take off the spareResources anything that was added to the package
+			for (int a=0 ; a < p.size() ; a++){
+				int auction = agent.getAuctionFor(p.get(a)[0], p.get(a)[1], p.get(a)[2]);
+				if (spareResources[auction] > 0) {
+					spareResources[auction]--;
+				}
+			}
+			log.fine("SpareResources: " + Arrays.toString(spareResources));
 			
 			// Add every element of the package to the list of things we need to get
 			for (int j=0 ; j < packageSet.get(i).size() ; j++) {
@@ -143,6 +165,7 @@ public class HermesAgent extends AgentImpl {
 		
 		log.fine(res);
 		
+		fillInitialSpareResources();
 	    calculateAllocation();
 	    dispatchDefaultEntertainment();
 	    sendBids();
