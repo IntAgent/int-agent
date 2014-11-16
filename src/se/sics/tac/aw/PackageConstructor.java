@@ -312,11 +312,11 @@ public class PackageConstructor {
 		for (int i=0 ; i < s.length ; i++){
 			if (s[i]==1){
 				p.addElement(agent.getAuctionCategory(i), agent.getAuctionType(i), agent.getAuctionDay(i));
-				HermesAgent.addToLog("Adding " + agent.getAuctionTypeAsString(i) + " to package " + (client+1));
+				//HermesAgent.addToLog("Adding " + agent.getAuctionTypeAsString(i) + " to package " + (client+1));
 			}
 		}
 		p.addUtility(utility);
-		HermesAgent.addToLog("Utility of package " + (client+1) + ": " + utility);
+		//HermesAgent.addToLog("Utility of package " + (client+1) + ": " + utility);
 		return p;
 	}
 	

@@ -32,6 +32,24 @@ public class HermesAgent extends AgentImpl {
 		packageSet = new PackageSet(agent);
 	  }
 	  
+	  public Package createBestPackage(int client, int[] whatWeHave) {
+		  
+		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave);
+		  int bestUtility = bestPackage.getUtility();
+		  
+		  Package newPackage;
+		  
+		  for (int i=0 ; i < 9 ; i++){
+			  newPackage = packageConstructor.makePackage(client, whatWeHave);
+			  if (newPackage.getUtility() > bestUtility){
+				  bestPackage = newPackage;
+				  bestUtility = newPackage.getUtility();
+			  }
+		  }
+		  
+		  return bestPackage;
+	  }
+	  
 	  public void calculateAllocation() {
 		  
 		// For each of the eight clients
@@ -40,7 +58,17 @@ public class HermesAgent extends AgentImpl {
 			// Create a package
 			//TODO Give the actual "what we already have" vector (with Entertainment)
 			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-			packageSet.set(i, packageConstructor.makePackage(i, whatWeHave));
+			packageSet.set(i, createBestPackage(i, whatWeHave));
+			
+			//Display the new package in the log
+			Package p = packageSet.get(i);
+			String res = "Package created for client " + (i+1) + "\n";
+			for (int a=0 ; a < p.size() ; a++){
+				int auction = agent.getAuctionFor(p.get(a)[0], p.get(a)[1], p.get(a)[2]);
+				res += agent.getAuctionTypeAsString(auction) + "\n";
+			}
+			res += "-------\n";
+			log.fine(res);
 			
 			// Add every element of the package to the list of things we need to get
 			for (int j=0 ; j < packageSet.get(i).size() ; j++) {
