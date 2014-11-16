@@ -74,9 +74,9 @@ public class PackageConstructor {
 		int cB=0;
 		
 		for (int i=inDate; i<outDate; i++) {
-			if (Pop[PopIndx][i] == 1)
+			if (Pop[PopIndx][i+3] == 1)
 				cG++;
-			if (Pop[PopIndx][i+4] == 1) //shift through string to get to BH guys.
+			if (Pop[PopIndx][i-1] == 1) //shift through string to get to BH guys.
 				cB++;
 		}
 		
@@ -203,7 +203,7 @@ public class PackageConstructor {
 
 		for (int i=inDate; i<outDate; i++)										// HOTELS // Check if we have a full package for a good one
 		{
-			if (Pop[PopIndx][i] == 1)
+			if (Pop[PopIndx][i+3] == 1)
 				cH++;
 		}
 		if (cH == outDate-inDate)												// Add pref bonus if we do...
@@ -255,7 +255,7 @@ public class PackageConstructor {
 	/////////////////////////////////////////////////////SUBSTRACTING FROM UTILITY FOR THINGS WE GOT/////////////////////////////////////////////////////
 		Utility-= 2*avrFlight;						//Punish flights!=)
 		
-		for (int i=0; i<4; i++)						// Punish good hotel!
+		for (int i=4; i<8; i++)						// Punish good hotel!
 		{
 			if (Pop[PopIndx][i] == 1)				// Check if we have it in package
 			{
@@ -266,7 +266,7 @@ public class PackageConstructor {
 			}										// Note: we do not worry about flagstring having -1 as Pop[PopIndx][i] == 1 will be false in that case
 			
 		}
-		for (int i=4; i<8; i++)						// Punish bad hotel! (Same)
+		for (int i=0; i<4; i++)						// Punish bad hotel! (Same)
 		{
 			if (Pop[PopIndx][i] == 1)
 			{
