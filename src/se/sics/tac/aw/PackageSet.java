@@ -7,6 +7,9 @@ public class PackageSet {
 
 	public PackageSet(TACAgent agent) {
 		this.agent = agent;
+		for (int i=0 ; i < packageList.length ; i++){
+			packageList[i] = new Package();
+		}
 	}
 	
 	public Package get(int i) {
@@ -16,6 +19,11 @@ public class PackageSet {
 	public void set(int i, Package p){
 		packageList[i] = p;
 	}
+	
+	public int size(){
+		return packageList.length;
+	}
+	
 	
 	public synchronized void distribute(int nbToDispatch, int auction){
 		int i = 0;

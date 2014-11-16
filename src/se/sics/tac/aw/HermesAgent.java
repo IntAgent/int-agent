@@ -1,5 +1,6 @@
 package se.sics.tac.aw;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,7 +16,7 @@ public class HermesAgent extends AgentImpl {
 	private Handler flightHandler;
 	private PackageConstructor packageConstructor;
 	private PackageSet packageSet;
-	//TODO int[] hotelsclosed = new int[8];
+	private int[] hotelsClosed = new int[8];
 	
 	private static final Logger log =
 			    Logger.getLogger(HermesAgent.class.getName());
@@ -50,14 +51,43 @@ public class HermesAgent extends AgentImpl {
 		  return bestPackage;
 	  }
 	  
+	  public int[] makeWhatWeHaveVector(int client) {
+			
+			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			for (int j=0 ; j < agent.getAuctionNo() ; j++){
+			
+				//if that auction is an hotel auction
+				if (j >= 8 && j <= 15) {
+					//if the hotel auction has already been closed
+					if (hotelsClosed[j-8] == 1){
+						whatWeHave[j] = -1;
+					}
+				}
+				
+				//if the client already has one, it overwrites the fact the auction was closed
+				int id = packageSet.get(client).findId(agent.getAuctionCategory(j), agent.getAuctionType(j), agent.getAuctionDay(j));
+				if (id != -1){
+					if (packageSet.get(client).get(id)[3] == 1){
+						whatWeHave[j] = 1;
+					}
+				}
+				
+			}
+			
+			return whatWeHave;
+	  }
+	  
 	  public void calculateAllocation() {
 		  
 		// For each of the eight clients
 		for (int i = 0 ; i < 8 ; i++) {
 			
+			//Construct vector of what we have
+			int[] whatWeHave = makeWhatWeHaveVector(i);
+			
+			log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
+			
 			// Create a package
-			//TODO Give the actual "what we already have" vector (with Entertainment)
-			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			packageSet.set(i, createBestPackage(i, whatWeHave));
 			
 			//Display the new package in the log
@@ -99,7 +129,7 @@ public class HermesAgent extends AgentImpl {
 	  public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
 		
-		String res = "";
+		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
 			res += "Client " + (i+1) + ":\n";
 			res += "Arrival on day " + agent.getClientPreference(i, agent.ARRIVAL) + "\n";
@@ -226,36 +256,13 @@ public class HermesAgent extends AgentImpl {
 	  public void auctionClosed(int auction) {
 		    log.fine("*** Auction " + auction + " closed!");
 		    
-		    //TODO update hotelsClosed
-		    
-		    /*//TODO clean this but the part with the "Oh no!" could still be useful
-		    int oldNb = oldOwns[auction];
-		    int newNb = agent.getOwn(auction);
-		    
-		    int nbToDispatch = newNb - oldNb;
-		    
-		    for(int i=0 ; i < packageList.length ; i++){
-		    	
-		    	int id = packageList[i].findId(agent.getAuctionCategory(auction), agent.getAuctionType(auction), agent.getAuctionDay(auction));
-		    	
-		    	//If the client wanted one
-		    	if (id > 0) {
-		    		//And if we got some :D
-		    		if (packageList[i].get(id)[3] == 0 && nbToDispatch > 0) {
-		    			packageList[i].get(id)[3] = 1;
-		    			nbToDispatch--;
-		    			log.fine("Yay! Client " + i + "wanted one and got it :)");
-		    		}
-		    		//And if we didn't get enough for him
-		    		else if (packageList[i].get(id)[3] == 0) {
-		    			log.fine("Oh no! Client " + i + "wanted one and didn't win :(");
-		    			//TODO for all those who couldn't get it: PackageConstructor(client, currentPackage, hotelsClosed)
-		    		}
-		    	}
+		    //Hotel auctions range from 8 to 15
+		    if (auction >= 8 && auction <= 15) {
+		    	hotelsClosed[auction-8] = 1;
 		    }
-		    
-		    System.arraycopy(agent.getOwns(), 0, oldOwns, 0, agent.getAuctionNo());
-		    */
+		    			
+			log.fine("WhatWeHave of client 1: " + Arrays.toString(makeWhatWeHaveVector(0)));
+
 		  }
 		
 	  public void quoteUpdated(int auctionCategory) {
