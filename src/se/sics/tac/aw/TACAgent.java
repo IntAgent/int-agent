@@ -649,6 +649,10 @@ public class TACAgent implements Task, TACMessageReceiver {
   public int getClientPreference(int client, int type) {
     return clientPrefs[client][type];
   }
+  
+  public int[] getClientPreferences(int client) {
+	  return clientPrefs[client];
+  }
 
   public int getOwn(int auctionID) {
     // The id that the agent gets for auctions is always 0 - 27

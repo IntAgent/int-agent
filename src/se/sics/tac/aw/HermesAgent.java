@@ -38,7 +38,9 @@ public class HermesAgent extends AgentImpl {
 		for (int i = 0 ; i < 8 ; i++) {
 			
 			// Create a package
-			packageSet.set(i, packageConstructor.makePackage(i));
+			//TODO Give the actual "what we already have" vector (with Entertainment)
+			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			packageSet.set(i, packageConstructor.makePackage(i, whatWeHave));
 			
 			// Add every element of the package to the list of things we need to get
 			for (int j=0 ; j < packageSet.get(i).size() ; j++) {
