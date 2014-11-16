@@ -7,6 +7,7 @@ public class Package {
 
 	/** Package is a List of elements. Each element is a vector containing [category, type, day, flag] **/
 	List<int[]> currentPackage = new ArrayList<int[]>();
+	int utility;
 	
 	public Package() {
 	}
@@ -17,6 +18,14 @@ public class Package {
 	public void addElement(int category, int type, int day) {
 		int[] v = {category, type, day, 0}; 
 		currentPackage.add(v);
+	}
+	
+	public void addUtility(int utility){
+		this.utility = utility;
+	}
+	
+	public int getUtility() {
+		return this.utility;
 	}
 	
 	public int[] get(int i) {

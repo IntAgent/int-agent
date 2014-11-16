@@ -307,7 +307,7 @@ public class PackageConstructor {
 			mutate(FlagString, Pop, PopInd);			// if "if" is not true, recall this function and hope it won't land on -1 that time (saves us some time)
 	}
 
-	private Package stringToPackage(int[] s, int client) {
+	private Package stringToPackage(int[] s, int client, int utility) {
 		Package p = new Package();
 		for (int i=0 ; i < s.length ; i++){
 			if (s[i]==1){
@@ -315,6 +315,8 @@ public class PackageConstructor {
 				HermesAgent.addToLog("Adding " + agent.getAuctionTypeAsString(i) + " to package " + (client+1));
 			}
 		}
+		p.addUtility(utility);
+		HermesAgent.addToLog("Utility of package " + (client+1) + ": " + utility);
 		return p;
 	}
 	
@@ -440,7 +442,7 @@ public class PackageConstructor {
 		System.out.println();
 		 */
 		
-		return stringToPackage(BestPackage, client);
+		return stringToPackage(BestPackage, client, UMax);
 	}
 
 }

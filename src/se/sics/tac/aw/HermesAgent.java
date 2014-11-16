@@ -73,7 +73,7 @@ public class HermesAgent extends AgentImpl {
 		
 		String res = "";
 		for (int i=0 ; i < 8 ; i++){
-			res += "Client " + i + ":\n";
+			res += "Client " + (i+1) + ":\n";
 			res += "Arrival on day " + agent.getClientPreference(i, agent.ARRIVAL) + "\n";
 			res += "Departure on day " + agent.getClientPreference(i, agent.DEPARTURE) + "\n";
 			res += "Hotel preference: " + agent.getClientPreference(i, agent.HOTEL_VALUE) + "\n";
