@@ -69,6 +69,20 @@ public class HermesAgent extends AgentImpl {
 	  public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
 		
+		String res = "";
+		for (int i=0 ; i < 8 ; i++){
+			res += "Client " + i + ":\n";
+			res += "Arrival on day " + agent.getClientPreference(i, agent.ARRIVAL) + "\n";
+			res += "Departure on day " + agent.getClientPreference(i, agent.DEPARTURE) + "\n";
+			res += "Hotel preference: " + agent.getClientPreference(i, agent.HOTEL_VALUE) + "\n";
+			res += "Entertainment 1: " + agent.getClientPreference(i, agent.E1) + "\n";
+			res += "Entertainment 2: " + agent.getClientPreference(i, agent.E2) + "\n";
+			res += "Entertainment 3: " + agent.getClientPreference(i, agent.E3) + "\n";
+			res += "---------------" + "\n";
+		}
+		
+		log.fine(res);
+		
 	    calculateAllocation();
 	    dispatchDefaultEntertainment();
 	    sendBids();
