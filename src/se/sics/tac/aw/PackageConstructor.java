@@ -418,7 +418,7 @@ public class PackageConstructor {
 			break;
 		case 8:
 			BestPackage[2]=1;
-			BestPackage[6]=1;
+			BestPackage[7]=1;
 			break;
 		case 9:
 			BestPackage[3]=1;
