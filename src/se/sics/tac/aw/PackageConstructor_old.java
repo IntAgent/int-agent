@@ -16,8 +16,8 @@ public class PackageConstructor_old {
 	      int hotel = agent.getClientPreference(i, TACAgent.HOTEL_VALUE); //Hotel preference
 	      int type; //Choice of hotel
 
-	      currentPackage.addElement(TACAgent.CAT_FLIGHT, TACAgent.TYPE_INFLIGHT, inFlight);
-	      currentPackage.addElement(TACAgent.CAT_FLIGHT, TACAgent.TYPE_OUTFLIGHT, outFlight);
+	      currentPackage.addElement(agent.getAuctionFor(TACAgent.CAT_FLIGHT, TACAgent.TYPE_INFLIGHT, inFlight));
+	      currentPackage.addElement(agent.getAuctionFor(TACAgent.CAT_FLIGHT, TACAgent.TYPE_OUTFLIGHT, outFlight));
 
 	      HermesAgent.addToLog("Adding inflight for day " + inFlight + " to package " + (i+1));
 	      HermesAgent.addToLog("Adding outflight for day " + outFlight + " to package " + (i+1));
@@ -32,7 +32,7 @@ public class PackageConstructor_old {
 		  
 	      // allocate a hotel night for each day that the agent stays
 	      for (int d = inFlight; d < outFlight; d++) {
-	    	currentPackage.addElement(TACAgent.CAT_HOTEL, type, d);
+	    	currentPackage.addElement(agent.getAuctionFor(TACAgent.CAT_HOTEL, type, d));
 			HermesAgent.addToLog("Adding hotel for day " + d + " to package " + (i+1));
 	      }
 
@@ -46,7 +46,7 @@ public class PackageConstructor_old {
 	    	  
 			d = bestEntDay(inFlight, outFlight, eType);
 			HermesAgent.addToLog("Adding entertainment " + eType + " to package " + (i+1));
-			currentPackage.addElement(TACAgent.CAT_ENTERTAINMENT, eType, d);
+			currentPackage.addElement(agent.getAuctionFor(TACAgent.CAT_ENTERTAINMENT, eType, d));
 	      }
 	      
 	      return currentPackage;

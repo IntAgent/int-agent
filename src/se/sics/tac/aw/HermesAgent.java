@@ -78,11 +78,8 @@ public class HermesAgent extends AgentImpl {
 				}
 				
 				//if the client already has one, it overwrites the fact the auction was closed
-				int id = packageSet.get(client).findId(agent.getAuctionCategory(j), agent.getAuctionType(j), agent.getAuctionDay(j));
-				if (id != -1){
-					if (packageSet.get(client).get(id)[3] == 1){
+				if (packageSet.get(client).hasBeenObtained(j)){
 						whatWeHave[j] = 1;
-					}
 				}
 				
 			}
@@ -103,19 +100,20 @@ public class HermesAgent extends AgentImpl {
 			// Create a package
 			packageSet.set(i, createBestPackage(i, whatWeHave));
 			
+			//List of the elements contained in the package
+			List<Integer> l = packageSet.get(i).getElements();
+			
 			//Display the new package in the log
-			Package p = packageSet.get(i);
 			String res = "Package created for client " + (i+1) + "\n";
-			for (int a=0 ; a < p.size() ; a++){
-				int auction = agent.getAuctionFor(p.get(a)[0], p.get(a)[1], p.get(a)[2]);
-				res += agent.getAuctionTypeAsString(auction) + "\n";
+			for (int a=0 ; a < l.size() ; a++){
+				res += agent.getAuctionTypeAsString(l.get(a)) + "\n";
 			}
 			res += "-------\n";
 			log.fine(res);
 			
 			//Take off the spareResources anything that was added to the package
-			for (int a=0 ; a < p.size() ; a++){
-				int auction = agent.getAuctionFor(p.get(a)[0], p.get(a)[1], p.get(a)[2]);
+			for (int a=0 ; a < l.size() ; a++){
+				int auction = l.get(a);
 				if (spareResources[auction] > 0) {
 					spareResources[auction]--;
 				}
@@ -123,9 +121,8 @@ public class HermesAgent extends AgentImpl {
 			log.fine("SpareResources: " + Arrays.toString(spareResources));
 			
 			// Add every element of the package to the list of things we need to get
-			for (int j=0 ; j < packageSet.get(i).size() ; j++) {
-				int[] element = packageSet.get(i).get(j);
-				int auction = agent.getAuctionFor(element[0], element[1], element[2]);
+			for (int j=0 ; j < l.size() ; j++) {
+				int auction = l.get(j);
 				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
 			}
 		}
@@ -264,10 +261,9 @@ public class HermesAgent extends AgentImpl {
 		    	
 			    res += "Client " + c + ":\n";
 			    
-			    List<int[]> elements = packageSet.get(c-1).getObtainedElements();
+			    List<Integer> elements = packageSet.get(c-1).getObtainedElements();
 			    for (int i=0 ; i < elements.size() ; i++) {
-			    	int auction = agent.getAuctionFor(elements.get(i)[0],elements.get(i)[1],elements.get(i)[2]);
-			    	res += agent.getAuctionTypeAsString(auction) + "\n";
+			    	res += agent.getAuctionTypeAsString(elements.get(i)) + "\n";
 			    }
 			    
 			    res += "-------\n";

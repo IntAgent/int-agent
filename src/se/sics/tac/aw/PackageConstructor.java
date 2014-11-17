@@ -311,7 +311,7 @@ public class PackageConstructor {
 		Package p = new Package();
 		for (int i=0 ; i < s.length ; i++){
 			if (s[i]==1){
-				p.addElement(agent.getAuctionCategory(i), agent.getAuctionType(i), agent.getAuctionDay(i));
+				p.addElement(i);
 				//HermesAgent.addToLog("Adding " + agent.getAuctionTypeAsString(i) + " to package " + (client+1));
 			}
 		}

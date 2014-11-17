@@ -29,16 +29,13 @@ public class PackageSet {
 		int i = 0;
 		while ((nbToDispatch > 0) && (i < 8)) {
 			
-			//Id of the element in the package corresponding to the auction (or -1 if no such element)
-			int id = packageList[i].findId(agent.getAuctionCategory(auction), agent.getAuctionType(auction), agent.getAuctionDay(auction));
-	    	
 	    	//If the package is interested in a ticket...
-	    	if (id != -1) {
+	    	if (packageList[i].isInPackage(auction)) {
 	    		
 	    		//... and hasn't the ticket yet
-	    		if (packageList[i].get(id)[3] == 0) {
+	    		if (packageList[i].getFlagFor(auction) == 0) {
 	    			
-	    			packageList[i].get(id)[3] = 1;
+	    			packageList[i].setFlagFor(auction);
 	    			nbToDispatch--;
 	    			HermesAgent.addToLog("Yay! Client " + (i+1) + " wanted " + agent.getAuctionTypeAsString(auction) + " (" + auction +") and got it");
 	    		}
