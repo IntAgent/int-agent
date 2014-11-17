@@ -9,8 +9,10 @@ public class Package {
 	/** Package is a List of elements. Each element is a vector containing [auction, flag] **/
 	HashMap<Integer, Integer> currentPackage = new HashMap<Integer, Integer>();
 	int utility;
+	int client;
 	
-	public Package() {
+	public Package(int client) {
+		this.client = client;
 	}
 	
 	/**
@@ -76,6 +78,10 @@ public class Package {
 		for (int key : currentPackage.keySet()) { res.add(key); }
 
 		return res;
+	}
+	
+	public int getClient(){
+		return client;
 	}
 	
 }

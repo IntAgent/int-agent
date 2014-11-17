@@ -9,7 +9,7 @@ public class PackageConstructor_old {
 
 	  public Package makePackage(int i) {
 		  
-		  Package currentPackage = new Package();
+		  Package currentPackage = new Package(i);
 		
 	      int inFlight = agent.getClientPreference(i, TACAgent.ARRIVAL); //Day of desired inflight
 	      int outFlight = agent.getClientPreference(i, TACAgent.DEPARTURE);

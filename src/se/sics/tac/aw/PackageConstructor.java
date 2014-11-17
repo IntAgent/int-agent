@@ -308,7 +308,7 @@ public class PackageConstructor {
 	}
 
 	private Package stringToPackage(int[] s, int client, int utility) {
-		Package p = new Package();
+		Package p = new Package(client);
 		for (int i=0 ; i < s.length ; i++){
 			if (s[i]==1){
 				p.addElement(i);
