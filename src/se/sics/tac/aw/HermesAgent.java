@@ -101,7 +101,7 @@ public class HermesAgent extends AgentImpl {
 			//Construct vector of what we have
 			int[] whatWeHave = makeWhatWeHaveVector(i);
 			
-			//log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
+			log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
 			
 			// Create a package
 			packageSet.set(i, createBestPackage(i, whatWeHave));
