@@ -687,6 +687,10 @@ public class TACAgent implements Task, TACMessageReceiver {
     return allocate[auction];
   }
 
+  public int[] getAllocations() {
+	  return allocate;
+  }
+  
   public void setAllocation(int auction, int alloc) {
     allocate[auction] = alloc;
     if (tableModel != null) {

@@ -87,44 +87,50 @@ public class HermesAgent extends AgentImpl {
 			return whatWeHave;
 	  }
 	  
-	  public void calculateAllocation() {
-		  
-		// For each of the eight clients
-		for (int i = 0 ; i < 8 ; i++) {
-			
+	  private void displayPackage(int i){
+		  List<Integer> l = packageSet.get(i).getElements();
+		  String res = "Package of client " + (i+1) + "\n";
+		  for (int a=0 ; a < l.size() ; a++){
+				res += agent.getAuctionTypeAsString(l.get(a)) + "\n";
+		  }
+		  res += "-------\n";
+		  log.fine(res);
+	  }
+	  
+	  private void calculateSeparateAllocation(int i){
 			//Construct vector of what we have
 			int[] whatWeHave = makeWhatWeHaveVector(i);
 			
-			log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
+			//log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
 			
 			// Create a package
 			packageSet.set(i, createBestPackage(i, whatWeHave));
 			
-			//List of the elements contained in the package
-			List<Integer> l = packageSet.get(i).getElements();
-			
 			//Display the new package in the log
-			String res = "Package created for client " + (i+1) + "\n";
-			for (int a=0 ; a < l.size() ; a++){
-				res += agent.getAuctionTypeAsString(l.get(a)) + "\n";
-			}
-			res += "-------\n";
-			log.fine(res);
+			//displayPackage(i);
 			
 			//Take off the spareResources anything that was added to the package
+			List<Integer> l = packageSet.get(i).getElements();
 			for (int a=0 ; a < l.size() ; a++){
 				int auction = l.get(a);
 				if (spareResources[auction] > 0) {
 					spareResources[auction]--;
 				}
 			}
-			log.fine("SpareResources: " + Arrays.toString(spareResources));
+			//log.fine("SpareResources: " + Arrays.toString(spareResources));
 			
 			// Add every element of the package to the list of things we need to get
 			for (int j=0 ; j < l.size() ; j++) {
 				int auction = l.get(j);
 				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
 			}
+	  }
+	  
+	  public void calculateAllocation() {
+		  
+		// For each of the eight clients
+		for (int i = 0 ; i < 8 ; i++) {
+			calculateSeparateAllocation(i);
 		}
 		
 	  }
@@ -226,7 +232,7 @@ public class HermesAgent extends AgentImpl {
 				auction = agent.getAuctionFor(agent.CAT_ENTERTAINMENT, type[i], day[j]);
 				nbOwned = agent.getOwn(auction);
 				if (nbOwned > 0) {
-					dispatch(nbOwned, auction);
+					this.packageSet.distribute(nbOwned, auction);
 				}
 			}
 		}
@@ -236,8 +242,7 @@ public class HermesAgent extends AgentImpl {
 	 public void dispatch(int nbToDispatch, int auction) {
 		log.fine("**** Dispatching " + nbToDispatch + " tickets of auction " + auction);
 	    
-		Thread t = new Thread(new ResourceDispatcher(packageSet, nbToDispatch, auction));
-		t.start();
+		this.packageSet.distribute(nbToDispatch, auction);
 
 	  }
 
@@ -280,8 +285,42 @@ public class HermesAgent extends AgentImpl {
 		    	hotelsClosed[auction-8] = 1;
 		    }
 		    			
-			log.fine("WhatWeHave of client 1: " + Arrays.toString(makeWhatWeHaveVector(0)));
-
+			//log.fine("WhatWeHave of client 1: " + Arrays.toString(makeWhatWeHaveVector(0)));
+		
+			for (int c=0 ; c < 8 ; c++){
+				
+				//if this client needed it and didn't get it
+				if (packageSet.get(c).isInPackage(auction)){
+					if (!packageSet.get(c).hasBeenObtained(auction)){
+						
+						log.fine("Oh no! Client " + (c+1) + "wanted one :(");
+						
+						log.fine("------OLD PACKAGE------");
+						displayPackage(c);
+						log.fine("Old allocations:" + Arrays.toString(agent.getAllocations()));
+						
+						List<Integer> elements = packageSet.get(c).getElements();
+						for (int i=0 ; i < elements.size() ; i++){
+							//Take the elements off the Allocations
+							agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
+							
+							//Add elements obtained from currentPackage to SpareResources
+							if (packageSet.get(c).hasBeenObtained(elements.get(i))){
+								spareResources[elements.get(i)]++;
+							}
+						}
+						
+						//Calculate new package and allocations
+						calculateSeparateAllocation(c);
+						
+						log.fine("------NEW PACKAGE------");
+						displayPackage(c);
+						log.fine("New allocations:" + Arrays.toString(agent.getAllocations()));
+					}
+				}
+			}
+			
+			//TODO manage the bidUpdate in the AuctionHandlers
 		  }
 		
 	  public void quoteUpdated(int auctionCategory) {
