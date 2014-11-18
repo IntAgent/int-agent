@@ -40,11 +40,12 @@ public class PackageSet {
 		while ((nbToDispatch > 0) && (i < 8)) {
 			
 			Package p = queue.poll();
-	    	//... and hasn't the ticket yet
+	    	//If this package hasn't the ticket yet
 			if (p != null) {
 		    	if (p.getFlagFor(auction) == 0) {
 		    			
 		    		p.setFlagFor(auction);
+		    		agent.deleteBidder(p.getClient(), auction);
 		    		nbToDispatch--;
 		    		HermesAgent.addToLog("Yay! Client " + p.getClient() + " got " + agent.getAuctionTypeAsString(auction) + " (" + auction +") U=" + p.getUtility());
 		    	}

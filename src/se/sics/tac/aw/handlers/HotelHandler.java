@@ -2,6 +2,7 @@ package se.sics.tac.aw.handlers;
 
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.HermesAgent;
+import se.sics.tac.aw.PackageSet;
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
 
@@ -9,7 +10,6 @@ public class HotelHandler extends Handler {
 
 	public HotelHandler(TACAgent agent) {
 		this.agent = agent;
-		this.log = HermesAgent.getLogger();
 		prices = new float[agent.getAuctionNo()];
 	}
 	
@@ -42,6 +42,12 @@ public class HotelHandler extends Handler {
 
 			agent.submitBid(bid);
 	      }
+	}
+
+	@Override
+	public void sendSeparateBids(int i, PackageSet packageSet) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

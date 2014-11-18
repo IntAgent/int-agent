@@ -234,6 +234,13 @@ public class TACAgent implements Task, TACMessageReceiver {
   private int exitAfterGames = -1;
   private int gamesPlayed = 0;
   private int lastGamePlayed = -1;
+  
+  
+	//Number of auctions handled x Number of clients
+	// -1 : Client doesn't want to bid on that auction
+	// 0 : Client wants to bid on that auction but we haven't calculated the price yet
+	// Over 0 : Last price that client bid on 
+  private int[][] bidders = new int[28][8];
 
   private TACAgent(AgentImpl agent) {
     this.agent = agent;
@@ -703,6 +710,26 @@ public class TACAgent implements Task, TACMessageReceiver {
       allocate[i] = 0;
     }
   }
+  
+	//-------------------------------------------
+  
+  public int getBidder(int auction, int client){
+	  return bidders[auction][client];
+  }
+  
+  public void setBidder(int auction, int client, int value){
+	  bidders[auction][client] = value;
+  }
+  
+	public void addBidder(int client, int auction) {
+		bidders[auction][client] = 0;
+	}
+	
+	public void deleteBidder(int client, int auction) {
+		bidders[auction][client] = -1;
+	}
+	
+	//-------------------------------------------
 
   private void clearAll() {
     isGameStarted = false;

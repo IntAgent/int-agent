@@ -123,6 +123,9 @@ public class HermesAgent extends AgentImpl {
 			for (int j=0 ; j < l.size() ; j++) {
 				int auction = l.get(j);
 				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
+				
+				//For our new handlers:
+				if (auction < 8) { agent.addBidder(auction, i); }
 			}
 	  }
 	  
@@ -180,7 +183,7 @@ public class HermesAgent extends AgentImpl {
 	      switch (agent.getAuctionCategory(i)) {
 			
 			case TACAgent.CAT_FLIGHT:
-				flightHandler.sendBids(i);
+				flightHandler.sendSeparateBids(i, packageSet);
 			break;
 			
 			  case TACAgent.CAT_HOTEL:
