@@ -11,7 +11,7 @@ import se.sics.tac.aw.handlers.HotelHandler;
 import se.sics.tac.util.ArgEnumerator;
 
 public class HermesAgent extends AgentImpl {
-	private Handler hotelHandler;
+	private HotelHandler hotelHandler;
 	private Handler entHandler;
 	private Handler flightHandler;
 	private PackageConstructor packageConstructor;
@@ -107,7 +107,7 @@ public class HermesAgent extends AgentImpl {
 			packageSet.set(i, createBestPackage(i, whatWeHave));
 			
 			//Display the new package in the log
-			//displayPackage(i);
+			displayPackage(i);
 			
 			//Take off the spareResources anything that was added to the package
 			List<Integer> l = packageSet.get(i).getElements();
@@ -125,7 +125,7 @@ public class HermesAgent extends AgentImpl {
 				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
 				
 				//For our new handlers:
-				if (auction < 8) { agent.addBidder(auction, i); }
+				agent.addBidder(i,auction);
 			}
 	  }
 	  
@@ -135,7 +135,7 @@ public class HermesAgent extends AgentImpl {
 		for (int i = 0 ; i < 8 ; i++) {
 			calculateSeparateAllocation(i);
 		}
-		
+		hotelHandler.addOwnDemand(packageSet); //TODO gerer updates
 	  }
 
 	  public void quoteUpdated(Quote quote) {
@@ -187,7 +187,7 @@ public class HermesAgent extends AgentImpl {
 			break;
 			
 			  case TACAgent.CAT_HOTEL:
-				  hotelHandler.sendBids(i);
+				  hotelHandler.sendSeparateBids(i, packageSet);
 			break;
 			
 			  case TACAgent.CAT_ENTERTAINMENT:
@@ -335,4 +335,5 @@ public class HermesAgent extends AgentImpl {
 	  public static void addToLog(String msg) {
 		  log.fine(msg);
 	  }
+	 
 }
