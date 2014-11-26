@@ -8,12 +8,14 @@ import se.sics.tac.aw.TACAgent;
 
 public class FlightHandler extends Handler {
 	
+	int[][] auctionHistory;
+	int timeInterval;								//current time interval
+	double trend;
+	
 	public FlightHandler(TACAgent agent) {
 		
-		int[][] auctionHistory = new int[8][55]; 		//price history
-		int timeInterval;								//current time interval
-		double trend;
-		
+		auctionHistory = new int[8][55]; 		//price history
+
 		this.agent = agent;
 		
 		//For all flight auctions (0-7), initialize to -1
@@ -34,7 +36,7 @@ public class FlightHandler extends Handler {
 	
 	//       *******************Trend prediction (CAUTION!! A lot of mess detected!! Brace yourself b4 proceeding!!)*********************************
 	
-	void Solver(double values[2][3], double& w, double& c)		// Not sure about how it works in java... This function gives us our inclanation and starting value
+	void Solver(double [][]values, double w, double c)
 {
     double delta = values[0][0] * values[1][1] - values[1][0] * values[0][1];
     double delta_w = values[0][1] * values[1][2] - values[1][1] * values[0][2];
@@ -86,7 +88,8 @@ double TrendCalc()												// Calculates and returns inclanation
 
 	for (int k=0; k<1; k++)
 	{
-		double w, c;
+		double w = 0;
+		double c = 0;
 		// Filing out our values									
 		for (int i=0; i<2; i++)				
 		{
@@ -138,7 +141,7 @@ double TrendCalc()												// Calculates and returns inclanation
 				{
 					//TODO Put here the calculation for the price
 					//int utilityPackage = packageSet.get(client).getUtility();
-					int price = auctionHistory[client][timeInteral]; 			// current auction price
+					int price = auctionHistory[client][timeInterval]; 			// current auction price
 				
 				
 					//FlightHandler.TrendCalc();
