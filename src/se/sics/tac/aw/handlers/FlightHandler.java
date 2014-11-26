@@ -27,7 +27,7 @@ public class FlightHandler extends Handler {
 		timeInterval = (int) agent.getGameTime()/10000;		//Try to get how many 10s has passed since the beginning
 		for (int i=0; i<8; i++)
 		{
-			auctionHistory[i][timeInterval]=0;				//?????Current auction price... Not sure how to get that...=/
+			auctionHistory[i][timeInterval]=(int) agent.getQuote(i).getAskPrice();				//?????Current auction price... Not sure how to get that...=/
 		}
 		
 	}
@@ -137,8 +137,8 @@ double TrendCalc()												// Calculates and returns inclanation
 		for (int client=0; client < 8 ; client++){
 			//If the client wants something from this auction
 			if (agent.getBidder(auction, client) != -1) {
-				if (auctionHistory[client][timeInterval]>450 || trend>5)   //i'm so lost in what can be used where...
-				{
+				if (auctionHistory[client][timeInterval]>450 || trend>5)   	//if the price is above 450 and we still need it - buy b4 too late
+				{															//or if it climbs too fast - do the same
 					//TODO Put here the calculation for the price
 					//int utilityPackage = packageSet.get(client).getUtility();
 					int price = auctionHistory[client][timeInterval]; 			// current auction price
