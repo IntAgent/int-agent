@@ -146,7 +146,7 @@ public class PackageConstructor {
 			if (WhatWeHave[5]==1)
 				Utility+=avrFlight-5;
 			break;
-		case '5':
+		case 5:
 			inDate=2;
 			outDate=4;
 			if (WhatWeHave[1]==1)
@@ -404,7 +404,7 @@ public class PackageConstructor {
 			BestPackage[1]=1;
 			BestPackage[5]=1;
 			break;
-		case '5':
+		case 5:
 			BestPackage[1]=1;
 			BestPackage[6]=1;
 			break;

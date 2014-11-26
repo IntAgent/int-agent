@@ -72,6 +72,16 @@ public class Package {
 		return res;
 	}
 	
+	public int getNbOfObtainedElements() {
+		int res = 0;
+		for (int key : currentPackage.keySet()) {
+		    if (currentPackage.get(key) == 1) {
+		    	res++;
+		    }
+		}
+		return res;
+	}
+	
 	public List<Integer> getElements() {
 		List<Integer> res = new ArrayList<Integer>();
 		
@@ -84,4 +94,13 @@ public class Package {
 		return client;
 	}
 	
+	public int getNbOfDays(){
+		int res = 0;
+		for (int auction=8 ; auction < 16 ; auction++){
+			if (isInPackage(auction)){
+				res++;
+			}
+		}
+		return res;
+	}
 }
