@@ -4,6 +4,7 @@ import java.util.Random;
 
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.HermesAgent;
+import se.sics.tac.aw.PackageConstructor;
 import se.sics.tac.aw.PackageSet;
 import se.sics.tac.aw.Package;
 import se.sics.tac.aw.Quote;
@@ -14,6 +15,8 @@ public class HotelHandler extends Handler {
 	Random r;
 	int[] estimatedOthersDemand;
 	int[] estimatedCurrentDemand;
+	
+	int[] historicalPrices = {10, 130, 110, 50, 100, 190, 150, 110};
 	
 	public HotelHandler(TACAgent agent) {
 		this.agent = agent;
@@ -69,22 +72,6 @@ public class HotelHandler extends Handler {
 			agent.replaceBid(agent.getBid(auction), bid);
 	      }
 	}
-	
-	public void sendBids(int i) {
-	      int alloc = agent.getAllocation(i) - agent.getOwn(i);
-	      float price = -1f;
-	      
-		if (alloc > 0) {
-			  price = 200;
-			}
-		
-	      if (price > 0) {
-			Bid bid = new Bid(i);
-			bid.addBidPoint(alloc, price);
-
-			agent.submitBid(bid);
-	      }
-	}
 
 	@Override
 	public void sendSeparateBids(int auction, PackageSet packageSet) {
@@ -95,8 +82,7 @@ public class HotelHandler extends Handler {
 			//If the client wants something from this auction
 			if (agent.getBidder(auction, client) != -1) {
 				
-				//TODO Put here the calculation for the price
-				int price = 200;
+				int price = historicalPrices[auction-8];
 				
 				//Put the latest price in the matrix
 				agent.setBidder(auction, client, price);
@@ -211,14 +197,26 @@ public class HotelHandler extends Handler {
 		
 		int utilityOfCurrentPackage = p.getUtility();
 		
+		PackageConstructor packageConstructor = new PackageConstructor(agent);
+		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(p.getClient());
+		whatWeHave[auction] = -1;
+		Package alternatePackage = packageConstructor.makePackage(p.getClient(), whatWeHave);
+		int utilityIfWeDontGetIt = alternatePackage.getUtility();
+		
 		//---------
 		
 		int nbOfDays = p.getNbOfDays();
 		
 		//---------
 		
-		int nbOfObtainedElements = p.getNbOfObtainedElements();
+		double percentageCompletion = p.completionPercentage();
 	  
+	}
+
+	@Override
+	public void sendBids(int i) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

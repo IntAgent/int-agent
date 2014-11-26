@@ -60,7 +60,7 @@ public class HermesAgent extends AgentImpl {
 		  return bestPackage;
 	  }
 	  
-	  private int[] makeWhatWeHaveVector(int client) {
+	  public int[] makeWhatWeHaveVector(int client) {
 			
 			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			for (int j=0 ; j < agent.getAuctionNo() ; j++){

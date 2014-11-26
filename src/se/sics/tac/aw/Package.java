@@ -72,14 +72,19 @@ public class Package {
 		return res;
 	}
 	
-	public int getNbOfObtainedElements() {
-		int res = 0;
+	public double completionPercentage() {
+		int obtainedEssential = 0;
+		int totEssential = 0;
+		
 		for (int key : currentPackage.keySet()) {
-		    if (currentPackage.get(key) == 1) {
-		    	res++;
+		    if (key < 16){
+		    	totEssential++;
+		    	if (currentPackage.get(key) == 1) {
+		    		obtainedEssential++;
+		    	}
 		    }
 		}
-		return res;
+		return obtainedEssential*1.0/totEssential;
 	}
 	
 	public List<Integer> getElements() {

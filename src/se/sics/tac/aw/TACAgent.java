@@ -729,6 +729,10 @@ public class TACAgent implements Task, TACMessageReceiver {
 		bidders[auction][client] = -1;
 	}
 	
+	public AgentImpl getAgent(){
+		return agent;
+	}
+	
 	//-------------------------------------------
 
   private void clearAll() {

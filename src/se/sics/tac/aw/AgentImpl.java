@@ -97,4 +97,5 @@ public abstract class AgentImpl {
 
   public abstract void dispatch(int quantity, int auction);
 
+  public abstract int[] makeWhatWeHaveVector(int client);
 } // AgentImpl
