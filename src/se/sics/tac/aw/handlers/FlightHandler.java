@@ -13,7 +13,7 @@ public class FlightHandler extends Handler {
 	double[] trend;
 	
 	public FlightHandler(TACAgent agent) {
-		///hm..
+	
 		auctionHistory = new int[8][55]; 		//price history
 		trend = new double[8];
 		this.agent = agent;
@@ -25,16 +25,7 @@ public class FlightHandler extends Handler {
 			}
 		}
 		
-		timeInterval = (int) agent.getGameTime()/10000;		//Try to get how many 10s has passed since the beginning
-		for (int i=0; i<8; i++)
-		{
-			auctionHistory[i][timeInterval]=(int) agent.getQuote(i).getAskPrice();		//Hope it works
-		}
-		for (int i=0; i<8; i++)
-		{
-			trend[i]=TrendCalc(i);
-		}
-		
+		Initialisation();
 	}
 	
 	void Initialisation ()
@@ -47,6 +38,7 @@ public class FlightHandler extends Handler {
 						auctionHistory[i][j]=0;
 					}
 				}
+				HermesAgent.addToLog("TryInitialisation");
 	}	
 	
 	//       *******************Trend prediction (CAUTION!! A lot of mess detected!! Brace yourself b4 proceeding!!)*********************************
@@ -138,7 +130,15 @@ public class FlightHandler extends Handler {
 		
 		Bid bid = new Bid(auction);
 		
-		
+		timeInterval = (int) agent.getGameTime()/10000;		//Try to get how many 10s has passed since the beginning
+		for (int i=0; i<8; i++)
+		{
+			auctionHistory[i][timeInterval]=(int) agent.getQuote(i).getAskPrice();		//Hope it works
+		}
+		for (int i=0; i<8; i++)
+		{
+			trend[i]=TrendCalc(i);
+		}
 		
 		for (int client=0; client < 8 ; client++){
 			//If the client wants something from this auction
