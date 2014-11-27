@@ -151,6 +151,11 @@ public class HermesAgent extends AgentImpl {
 		else if (auctionCategory == TACAgent.CAT_ENTERTAINMENT) {
 			entHandler.quoteUpdated(quote, auction);
 	    }
+	    
+	    //3) FLIGHT
+		else {
+			flightHandler.quoteUpdated(quote, auction);
+		}
 	  }
 
 
@@ -181,11 +186,7 @@ public class HermesAgent extends AgentImpl {
 	    for (int i = 0, n = agent.getAuctionNo(); i < n; i++) {
 		  
 	      switch (agent.getAuctionCategory(i)) {
-			
-			case TACAgent.CAT_FLIGHT:
-				flightHandler.sendSeparateBids(i, packageSet);
-			break;
-			
+
 			  case TACAgent.CAT_HOTEL:
 				  hotelHandler.sendSeparateBids(i, packageSet);
 			break;
