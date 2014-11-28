@@ -31,6 +31,10 @@ public class PackageConstructor {
 	private int avrBHotel = 40;
 	private int avrEntertainment = 80; // not sure there is a difference in price between different entert's...
 	
+	/**public int [] curFlight = new int[8];
+	public int [] curHotel = new int[8];*/
+	
+	
 	public PackageConstructor(TACAgent agent) {
 		this.agent = agent;
 	}
@@ -141,7 +145,7 @@ public class PackageConstructor {
 		case 4:
 			inDate=2;
 			outDate=3;
-			if (WhatWeHave[0]==1)
+			if (WhatWeHave[1]==1)
 				Utility+=avrFlight-5;
 			if (WhatWeHave[5]==1)
 				Utility+=avrFlight-5;
@@ -187,7 +191,92 @@ public class PackageConstructor {
 				Utility+=avrFlight-5;
 			break;
 		}
-			
+		/**	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!This is to work with curFlight prices!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		switch (PopIndx) // Get in/out flight dates into corresponding var's... Looks bad, i know...
+		{
+		case 0:
+			inDate=1;
+			outDate=2;
+			if (WhatWeHave[0]==1)			// Those "if's" are to see if we already have flights for those days
+				Utility+=curFligth[0]-5;		// so we can encourage our population to use them.
+			if (WhatWeHave[4]==1)
+				Utility+=curFligth[4]-5;
+			break;
+		case 1:
+			inDate=1;
+			outDate=3;
+			if (WhatWeHave[0]==1)
+				Utility+=curFligth[0]-5;
+			if (WhatWeHave[5]==1)
+				Utility+=curFligth[5]-5;
+			break;
+		case 2:
+			inDate=1;
+			outDate=4;
+			if (WhatWeHave[0]==1)
+				Utility+=curFligth[0]-5;
+			if (WhatWeHave[6]==1)
+				Utility+=curFligth[6]-5;
+			break;
+		case 3:
+			inDate=1;
+			outDate=5;
+			if (WhatWeHave[0]==1)
+				Utility+=curFligth[0]-5;
+			if (WhatWeHave[7]==1)
+				Utility+=curFligth[7]-5;
+			break;
+		case 4:
+			inDate=2;
+			outDate=3;
+			if (WhatWeHave[1]==1)
+				Utility+=curFligth[1]-5;
+			if (WhatWeHave[5]==1)
+				Utility+=curFligth[5]-5;
+			break;
+		case 5:
+			inDate=2;
+			outDate=4;
+			if (WhatWeHave[1]==1)
+				Utility+=curFligth[1]-5;
+			if (WhatWeHave[6]==1)
+				Utility+=curFligth[6]-5;
+			break;
+		case 6:
+			inDate=2;
+			outDate=5;
+			if (WhatWeHave[1]==1)
+				Utility+=curFligth[1]-5;
+			if (WhatWeHave[7]==1)
+				Utility+=curFligth[7]-5;
+			break;
+		case 7:
+			inDate=3;
+			outDate=4;
+			if (WhatWeHave[2]==1)
+				Utility+=curFligth[2]-5;
+			if (WhatWeHave[6]==1)
+				Utility+=curFligth[6]-5;
+			break;
+		case 8:
+			inDate=3;
+			outDate=5;
+			if (WhatWeHave[2]==1)
+				Utility+=curFligth[2]-5;
+			if (WhatWeHave[7]==1)
+				Utility+=curFligth[7]-5;
+			break;
+		case 9:
+			inDate=4;
+			outDate=5;
+			if (WhatWeHave[3]==1)
+				Utility+=curFligth[3]-5;
+			if (WhatWeHave[7]==1)
+				Utility+=curFligth[7]-5;
+			break;
+		}
+		*/
+		
 		/////////////////////////////////////////////////////CHECKING FOR FEASIBILITY/////////////////////////////////////////////////////
 		if (checkFeasible(Pop, inDate,outDate,PopIndx))	// if feasible - add 1000, break otherwise
 			Utility+=1000;
@@ -254,6 +343,7 @@ public class PackageConstructor {
 		}
 	/////////////////////////////////////////////////////SUBSTRACTING FROM UTILITY FOR THINGS WE GOT/////////////////////////////////////////////////////
 		Utility-= 2*avrFlight;						//Punish flights!=)
+		/**Utility-= curFligth[inDate-1]+curFligth[outDate+3];	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 		
 		for (int i=4; i<8; i++)						// Punish good hotel!
 		{
@@ -261,6 +351,7 @@ public class PackageConstructor {
 			{
 				if (FlagString[i] == 0)				// Chek if we already own it
 					Utility-= avrGHotel;			// If we don't - substract avr price
+				/**Utility-=curHotel[i];				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 				else
 					Utility-= 5;					// If we do - substract small value
 			}										// Note: we do not worry about flagstring having -1 as Pop[PopIndx][i] == 1 will be false in that case
@@ -271,7 +362,8 @@ public class PackageConstructor {
 			if (Pop[PopIndx][i] == 1)
 			{
 				if (FlagString[i] == 0)				
-					Utility-= avrBHotel;			
+					Utility-= avrBHotel;
+				/**Utility-=curHotel[i];				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 				else
 					Utility-= 5;			
 			}
@@ -322,7 +414,19 @@ public class PackageConstructor {
 	
 	public Package makePackage(int client, int[] w) // That is our global mega-super-thing... 
 	{
-
+		/**!!!!!!!!!!!!!!!!!!!!!!!!!!!We need to initialise our prices with avr at the beginning for the first run!!!!!!!!
+		 for (int i=0; i<8; i++)
+		 {
+		 	curFlight[i]=avrFlight;
+		 	if (i<4)
+		 		curHotel[i]=avrBHotel;
+		 	else
+		 		curHotel[i]=avrGHotel;
+		 }
+		 */
+		
+		
+		
 		// all those should be global within this thing...
 		int[][] Pop = new int[pSize][length]; //Population of hillclimbers
 		int[] FlagString = new int[length]; // Flag constraint line (same for whole population/ different between clients)
