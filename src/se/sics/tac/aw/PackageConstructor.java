@@ -259,7 +259,7 @@ public class PackageConstructor {
 			cE[EUsedCounter]--;							// remove that entr type from avaliable
 		}
 	/////////////////////////////////////////////////////SUBSTRACTING FROM UTILITY FOR THINGS WE GOT/////////////////////////////////////////////////////
-		Utility-= curFlight[inDate-1]+curFlight[outDate+3];//Punish flights!=)
+		Utility-= curFlight[inDate-1]+curFlight[outDate+2];//Punish flights!=)
 		
 		for (int i=4; i<8; i++)						// Punish good hotel!
 		{
