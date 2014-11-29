@@ -133,7 +133,7 @@ public class FlightHandler extends Handler {
 			buyAtCurrentPrice(auction);
 		}
 		
-		else if (auctionHistory[auction][timeInterval]>450 && gameTime<7)   	//if the price is above 450 and we still need it - buy b4 too late
+		else if (auctionHistory[auction][timeInterval]>420 && gameTime<7)   	//if the price is above 450 and we still need it - buy b4 too late
 		{																		//or if it climbs too fast - do the same
 		
 			HermesAgent.addToLog("Meets the criteria of price>450 in the first 70 sec");
@@ -147,7 +147,7 @@ public class FlightHandler extends Handler {
 		
 			HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
 		
-			if (auctionHistory[auction][timeInterval]>450 || trend[auction]>5-0.08*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+			if (auctionHistory[auction][timeInterval]>450 || trend[auction]>4-0.08*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
 			{																		//or if it climbs too fast - do the same
 		
 				HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
