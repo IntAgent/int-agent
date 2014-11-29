@@ -123,14 +123,9 @@ public class FlightHandler extends Handler {
 		
 		HermesAgent.addToLog("Price for auction " + auction + " is now: " + auctionHistory[auction][timeInterval]);
 		
-		trend[auction] = TrendCalc(auction);
-		
-		HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
-
-		if (auctionHistory[auction][timeInterval]>450 || trend[auction]>5)   	//if the price is above 450 and we still need it - buy b4 too late
-		{																		//or if it climbs too fast - do the same
-		
-			HermesAgent.addToLog("Meets the criteria to buy!");
+		if (timeInterval==0 && auctionHistory[auction][timeInterval]<300)		//Initial <300 buying
+		{
+			HermesAgent.addToLog("Meets initial criteria of <300");
 			
 			for (int client=0; client < 8 ; client++){
 			//If the client wants something from this auction
@@ -142,6 +137,75 @@ public class FlightHandler extends Handler {
 					//Put the latest price in the matrix
 					agent.setBidder(auction, client, price);
 				
+					//Bid for that client
+					bid.addBidPoint(1, price);
+				}
+			}
+		}
+		
+		if (auctionHistory[auction][timeInterval]>450 && timeInterval<7 && timeInterval!=0)   	//if the price is above 450 and we still need it - buy b4 too late
+		{																		//or if it climbs too fast - do the same
+		
+			HermesAgent.addToLog("Meets the criteria of b4 sec 70 buy!");
+			
+			for (int client=0; client < 8 ; client++){
+			//If the client wants something from this auction
+				
+			if (agent.getBidder(auction, client) != -1) {
+
+					int price = auctionHistory[auction][timeInterval]; 			// current auction price				
+					
+					//Put the latest price in the matrix
+					agent.setBidder(auction, client, price);
+				
+					//Bid for that client
+					bid.addBidPoint(1, price);
+				}
+			}
+		}
+		
+		if (timeInterval >= 7 && timeInterval < 48)
+		{
+			trend[auction] = TrendCalc(auction);
+		
+			HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
+		
+			if (auctionHistory[auction][timeInterval]>450 || trend[auction]>6-0.25*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+			{																		//or if it climbs too fast - do the same
+		
+				HermesAgent.addToLog("Meets the criteria to buy!");
+			
+				for (int client=0; client < 8 ; client++){
+					//If the client wants something from this auction
+				
+					if (agent.getBidder(auction, client) != -1) {
+
+						int price = auctionHistory[auction][timeInterval]; 			// current auction price				
+					
+						//Put the latest price in the matrix
+						agent.setBidder(auction, client, price);
+				
+						//Bid for that client
+						bid.addBidPoint(1, price);
+					}
+				}
+			}
+		}
+		
+		if (timeInterval >= 48)
+		{
+			HermesAgent.addToLog("Meets the criteria to buy!");
+			
+			for (int client=0; client < 8 ; client++){
+				//If the client wants something from this auction
+			
+				if (agent.getBidder(auction, client) != -1) {
+
+					int price = auctionHistory[auction][timeInterval]; 			// current auction price				
+				
+					//Put the latest price in the matrix
+					agent.setBidder(auction, client, price);
+			
 					//Bid for that client
 					bid.addBidPoint(1, price);
 				}
