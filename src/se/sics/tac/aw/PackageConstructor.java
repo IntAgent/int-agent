@@ -209,11 +209,12 @@ public class PackageConstructor {
 				cH++;
 		}
 		if (cH == outDate-inDate)												// Add pref bonus if we do...
-				// Substract avr price difference between good and bad hotel*#of days
+		{
 			for (int i=inDate; i<outDate; i++) {
 			  		Utility -= (curHotel[i+3]-curHotel[i-1]);
 			}
 			Utility+=ClientPref[2];
+		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		for (int i=0; i<4; i++)							// ENTERTAINMENT // CAUTION!!! This part looks like shit! Filling out arrays according to our individual. 
