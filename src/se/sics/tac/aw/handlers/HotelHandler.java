@@ -54,6 +54,7 @@ public class HotelHandler extends Handler {
 						
 						//If it's in our interest to go on bidding
 						if (diff >= 0){
+							if (diff==0) { diff++; }
 							int newPrice = askPrice + diff;
 				    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
 				    		agent.setBidder(auction, client, newPrice);	
