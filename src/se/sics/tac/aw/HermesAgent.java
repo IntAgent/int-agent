@@ -42,15 +42,15 @@ public class HermesAgent extends AgentImpl {
 		  log.fine("SpareResources: " + Arrays.toString(spareResources));
 	  }
 	  
-	  private Package createBestPackage(int client, int[] whatWeHave) {
+	  private Package createBestPackage(int client, int[] whatWeHave, boolean average) {
 		  
-		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave, true);
+		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave, average);
 		  int bestUtility = bestPackage.getUtility();
 		  
 		  Package newPackage;
 		  
 		  for (int i=0 ; i < 9 ; i++){
-			  newPackage = packageConstructor.makePackage(client, whatWeHave, true);
+			  newPackage = packageConstructor.makePackage(client, whatWeHave, average);
 			  if (newPackage.getUtility() > bestUtility){
 				  bestPackage = newPackage;
 				  bestUtility = newPackage.getUtility();
@@ -97,14 +97,14 @@ public class HermesAgent extends AgentImpl {
 		  log.fine(res);
 	  }
 	  
-	  private void calculateSeparateAllocation(int i){
+	  private void calculateSeparateAllocation(int i, boolean average){
 			//Construct vector of what we have
 			int[] whatWeHave = makeWhatWeHaveVector(i);
 			
 			log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
 			
 			// Create a package
-			packageSet.set(i, createBestPackage(i, whatWeHave));
+			packageSet.set(i, createBestPackage(i, whatWeHave, average));
 			
 			//Display the new package in the log
 			displayPackage(i);
@@ -133,7 +133,7 @@ public class HermesAgent extends AgentImpl {
 		  
 		// For each of the eight clients
 		for (int i = 0 ; i < 8 ; i++) {
-			calculateSeparateAllocation(i);
+			calculateSeparateAllocation(i, true);
 		}
 		hotelHandler.addOwnDemand(packageSet); //TODO gerer updates
 	  }
@@ -315,7 +315,7 @@ public class HermesAgent extends AgentImpl {
 						}
 						
 						//Calculate new package and allocations
-						calculateSeparateAllocation(c);
+						calculateSeparateAllocation(c, false);
 						
 						log.fine("------NEW PACKAGE------");
 						displayPackage(c);

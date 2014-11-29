@@ -49,9 +49,15 @@ public class HotelHandler extends Handler {
 			    	
 					if (agent.getBidder(auction, client) <= askPrice){
 			    		
-						int newPrice = askPrice + 50;
-			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
-			    		agent.setBidder(auction, client, newPrice);
+						int diff = utilityDifferenceWithAlternative(auction, client);
+						HermesAgent.addToLog("Difference of U is thus " + diff);
+						
+						//If it's in our interest to go on bidding
+						if (diff >= 0){
+							int newPrice = askPrice + diff;
+				    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
+				    		agent.setBidder(auction, client, newPrice);	
+						}
 			    	} else {HermesAgent.addToLog("Already > askPrice :" + agent.getBidder(auction, client));} 	
 				}
 			}
@@ -181,6 +187,22 @@ public class HotelHandler extends Handler {
 		}
 	}
 	
+	public int utilityDifferenceWithAlternative(int auction, int client) {
+		
+		PackageConstructor packageConstructor = new PackageConstructor(agent);
+		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(client);
+		
+		Package currentPackage = packageConstructor.makePackage(client, whatWeHave, true);
+		int utilityOfCurrentPackage = currentPackage.getUtility();
+		
+		whatWeHave[auction] = -1;
+		Package alternatePackage = packageConstructor.makePackage(client, whatWeHave, true);
+		int utilityIfWeDontGetIt = alternatePackage.getUtility();
+		
+		HermesAgent.addToLog("U of current: " + utilityOfCurrentPackage + " vs U of alt: " + utilityIfWeDontGetIt);
+		return (utilityOfCurrentPackage - utilityIfWeDontGetIt);
+	}
+	
 	public void howBadDoWeWantIt(int auction, Package p) {
 		int otherHotelForThatDay = 0;
 		if (auction >= 12) { otherHotelForThatDay = auction-4; }
@@ -196,15 +218,7 @@ public class HotelHandler extends Handler {
 		}
 		
 		//---------
-		
-		int utilityOfCurrentPackage = p.getUtility();
-		
-		PackageConstructor packageConstructor = new PackageConstructor(agent);
-		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(p.getClient());
-		whatWeHave[auction] = -1;
-		Package alternatePackage = packageConstructor.makePackage(p.getClient(), whatWeHave, false);
-		int utilityIfWeDontGetIt = alternatePackage.getUtility();
-		
+
 		//---------
 		
 		int nbOfDays = p.getNbOfDays();
