@@ -351,7 +351,7 @@ public class PackageConstructor {
 				curFlight[i] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
 			}
 			for (int i=8; i < 16 ; i++){
-				curHotel[i] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
+				curHotel[i-8] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
 			}
 		}
 		
