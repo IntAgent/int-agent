@@ -73,6 +73,9 @@ public class HotelHandler extends Handler {
 	}
 
 	@Override
+	/**
+	 * Initial bid, based on the historical prices
+	 */
 	public void sendSeparateBids(int auction, PackageSet packageSet) {
 		HermesAgent.addToLog("HOTELHANDLER.SENDSEPARATEBIDS()");
 		Bid bid = new Bid(auction);
@@ -199,7 +202,7 @@ public class HotelHandler extends Handler {
 		PackageConstructor packageConstructor = new PackageConstructor(agent);
 		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(p.getClient());
 		whatWeHave[auction] = -1;
-		Package alternatePackage = packageConstructor.makePackage(p.getClient(), whatWeHave);
+		Package alternatePackage = packageConstructor.makePackage(p.getClient(), whatWeHave, false);
 		int utilityIfWeDontGetIt = alternatePackage.getUtility();
 		
 		//---------

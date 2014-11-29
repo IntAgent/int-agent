@@ -25,14 +25,11 @@ public class PackageConstructor {
 	
 	private final int pSize = 10; //Size of Population
 	private final int length = 20; //Length of bit string for individual
-
-	private int avrFlight = 350;	// Our estimations of avr prices...
-	private int avrGHotel = 70;
-	private int avrBHotel = 40;
+	
 	private int avrEntertainment = 80; // not sure there is a difference in price between different entert's...
 	
-	/**public int [] curFlight = new int[8];		//!!!!!initialisation!!!!!!!!!!!
-	public int [] curHotel = new int[8];*/
+	public int [] curFlight = new int[8];
+	public int [] curHotel = new int[8];
 	
 	
 	public PackageConstructor(TACAgent agent) {
@@ -108,174 +105,90 @@ public class PackageConstructor {
 		int Utility=0;						//That's the thing we're looking for=)
 		
 		////////////////////////////////////////////////////DETERMINING POP FEATURES/////////////////////////////////////////////////
-		switch (PopIndx) // Get in/out flight dates into corresponding var's... Looks bad, i know...
-		{
-		case 0:
-			inDate=1;
-			outDate=2;
-			if (WhatWeHave[0]==1)			// Those "if's" are to see if we already have flights for those days
-				Utility+=avrFlight-5;		// so we can encourage our population to use them.
-			if (WhatWeHave[4]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 1:
-			inDate=1;
-			outDate=3;
-			if (WhatWeHave[0]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[5]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 2:
-			inDate=1;
-			outDate=4;
-			if (WhatWeHave[0]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[6]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 3:
-			inDate=1;
-			outDate=5;
-			if (WhatWeHave[0]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[7]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 4:
-			inDate=2;
-			outDate=3;
-			if (WhatWeHave[1]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[5]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 5:
-			inDate=2;
-			outDate=4;
-			if (WhatWeHave[1]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[6]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 6:
-			inDate=2;
-			outDate=5;
-			if (WhatWeHave[1]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[7]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 7:
-			inDate=3;
-			outDate=4;
-			if (WhatWeHave[2]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[6]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 8:
-			inDate=3;
-			outDate=5;
-			if (WhatWeHave[2]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[7]==1)
-				Utility+=avrFlight-5;
-			break;
-		case 9:
-			inDate=4;
-			outDate=5;
-			if (WhatWeHave[3]==1)
-				Utility+=avrFlight-5;
-			if (WhatWeHave[7]==1)
-				Utility+=avrFlight-5;
-			break;
-		}
-		/**	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!This is to work with curFlight prices!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 		switch (PopIndx) 					// Get in/out flight dates into corresponding var's... Looks bad, i know...
 		{
 		case 0:
 			inDate=1;
 			outDate=2;
 			if (WhatWeHave[0]==1)			
-				Utility+=curFligth[0]-5;		
+				Utility+=curFlight[0]-5;		
 			if (WhatWeHave[4]==1)
-				Utility+=curFligth[4]-5;
+				Utility+=curFlight[4]-5;
 			break;
 		case 1:
 			inDate=1;
 			outDate=3;
 			if (WhatWeHave[0]==1)
-				Utility+=curFligth[0]-5;
+				Utility+=curFlight[0]-5;
 			if (WhatWeHave[5]==1)
-				Utility+=curFligth[5]-5;
+				Utility+=curFlight[5]-5;
 			break;
 		case 2:
 			inDate=1;
 			outDate=4;
 			if (WhatWeHave[0]==1)
-				Utility+=curFligth[0]-5;
+				Utility+=curFlight[0]-5;
 			if (WhatWeHave[6]==1)
-				Utility+=curFligth[6]-5;
+				Utility+=curFlight[6]-5;
 			break;
 		case 3:
 			inDate=1;
 			outDate=5;
 			if (WhatWeHave[0]==1)
-				Utility+=curFligth[0]-5;
+				Utility+=curFlight[0]-5;
 			if (WhatWeHave[7]==1)
-				Utility+=curFligth[7]-5;
+				Utility+=curFlight[7]-5;
 			break;
 		case 4:
 			inDate=2;
 			outDate=3;
 			if (WhatWeHave[1]==1)
-				Utility+=curFligth[1]-5;
+				Utility+=curFlight[1]-5;
 			if (WhatWeHave[5]==1)
-				Utility+=curFligth[5]-5;
+				Utility+=curFlight[5]-5;
 			break;
 		case 5:
 			inDate=2;
 			outDate=4;
 			if (WhatWeHave[1]==1)
-				Utility+=curFligth[1]-5;
+				Utility+=curFlight[1]-5;
 			if (WhatWeHave[6]==1)
-				Utility+=curFligth[6]-5;
+				Utility+=curFlight[6]-5;
 			break;
 		case 6:
 			inDate=2;
 			outDate=5;
 			if (WhatWeHave[1]==1)
-				Utility+=curFligth[1]-5;
+				Utility+=curFlight[1]-5;
 			if (WhatWeHave[7]==1)
-				Utility+=curFligth[7]-5;
+				Utility+=curFlight[7]-5;
 			break;
 		case 7:
 			inDate=3;
 			outDate=4;
 			if (WhatWeHave[2]==1)
-				Utility+=curFligth[2]-5;
+				Utility+=curFlight[2]-5;
 			if (WhatWeHave[6]==1)
-				Utility+=curFligth[6]-5;
+				Utility+=curFlight[6]-5;
 			break;
 		case 8:
 			inDate=3;
 			outDate=5;
 			if (WhatWeHave[2]==1)
-				Utility+=curFligth[2]-5;
+				Utility+=curFlight[2]-5;
 			if (WhatWeHave[7]==1)
-				Utility+=curFligth[7]-5;
+				Utility+=curFlight[7]-5;
 			break;
 		case 9:
 			inDate=4;
 			outDate=5;
 			if (WhatWeHave[3]==1)
-				Utility+=curFligth[3]-5;
+				Utility+=curFlight[3]-5;
 			if (WhatWeHave[7]==1)
-				Utility+=curFligth[7]-5;
+				Utility+=curFlight[7]-5;
 			break;
 		}
-		*/
 		
 		/////////////////////////////////////////////////////CHECKING FOR FEASIBILITY/////////////////////////////////////////////////////
 		if (checkFeasible(Pop, inDate,outDate,PopIndx))	// if feasible - add 1000, break otherwise
@@ -296,12 +209,11 @@ public class PackageConstructor {
 				cH++;
 		}
 		if (cH == outDate-inDate)												// Add pref bonus if we do...
-			Utility+= ClientPref [2] - (avrGHotel-avrBHotel)*(outDate-inDate);	// Substract avr price difference between good and bad hotel*#of days
-			/**for (int i=inDate; i<outDate; i++)
-			 * {
-			 * 		Utility-=curHotel[i+3]-curHotel[i-1]);
-			 * }
-			 * Utility+=ClientPref[2];				*/
+				// Substract avr price difference between good and bad hotel*#of days
+			for (int i=inDate; i<outDate; i++) {
+			  		Utility -= (curHotel[i+3]-curHotel[i-1]);
+			}
+			Utility+=ClientPref[2];
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		for (int i=0; i<4; i++)							// ENTERTAINMENT // CAUTION!!! This part looks like shit! Filling out arrays according to our individual. 
@@ -347,16 +259,14 @@ public class PackageConstructor {
 			cE[EUsedCounter]--;							// remove that entr type from avaliable
 		}
 	/////////////////////////////////////////////////////SUBSTRACTING FROM UTILITY FOR THINGS WE GOT/////////////////////////////////////////////////////
-		Utility-= 2*avrFlight;						//Punish flights!=)
-		/**Utility-= curFligth[inDate-1]+curFligth[outDate+3];	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+		Utility-= curFlight[inDate-1]+curFlight[outDate+3];//Punish flights!=)
 		
 		for (int i=4; i<8; i++)						// Punish good hotel!
 		{
 			if (Pop[PopIndx][i] == 1)				// Check if we have it in package
 			{
 				if (FlagString[i] == 0)				// Chek if we already own it
-					Utility-= avrGHotel;			// If we don't - substract avr price
-				/**Utility-=curHotel[i];				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+					Utility-=curHotel[i];			// If we don't - substract avr price
 				else
 					Utility-= 5;					// If we do - substract small value
 			}										// Note: we do not worry about flagstring having -1 as Pop[PopIndx][i] == 1 will be false in that case
@@ -367,8 +277,7 @@ public class PackageConstructor {
 			if (Pop[PopIndx][i] == 1)
 			{
 				if (FlagString[i] == 0)				
-					Utility-= avrBHotel;
-				/**Utility-=curHotel[i];				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+					Utility-=curHotel[i];
 				else
 					Utility-= 5;			
 			}
@@ -417,22 +326,34 @@ public class PackageConstructor {
 		return p;
 	}
 	
-	public Package makePackage(int client, int[] w) // That is our global mega-super-thing... 
-	{
-		/**!!!!!!!!!!!!!!!!!!!!!!!!!!!We need to initialise our prices with avr at the beginning for the first run!!!!!!!!
-		 for (int i=0; i<8; i++)
-		 {
-		 	curFlight[i]=avrFlight;
-		 	if (i<4)
-		 		curHotel[i]=avrBHotel;
-		 	else
-		 		curHotel[i]=avrGHotel;
-		 }
-		 */
+	public Package makePackage(int client, int[] w, boolean useAverage) // That is our global mega-super-thing... 
+	{	
+		//If we're using average prices
+		if (useAverage) {
+			int avrFlight = 350;	// Our estimations of avr prices...
+			int avrGHotel = 70;
+			int avrBHotel = 40;
+			
+			//Working with average prices
+			for (int i=0; i < 8 ; i++){
+				
+				curFlight[i] = avrFlight;
+				
+				if (i<4){ curHotel[i] = avrBHotel;}
+				else { curHotel[i] = avrGHotel; }
+			}
+		}
 		
+		// If we're using the actual current prices
+		else {
+			for (int i=0; i < 8 ; i++){
+				curFlight[i] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
+			}
+			for (int i=8; i < 16 ; i++){
+				curHotel[i] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
+			}
+		}
 		
-		
-		// all those should be global within this thing...
 		int[][] Pop = new int[pSize][length]; //Population of hillclimbers
 		int[] FlagString = new int[length]; // Flag constraint line (same for whole population/ different between clients)
 

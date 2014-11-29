@@ -44,13 +44,13 @@ public class HermesAgent extends AgentImpl {
 	  
 	  private Package createBestPackage(int client, int[] whatWeHave) {
 		  
-		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave);
+		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave, true);
 		  int bestUtility = bestPackage.getUtility();
 		  
 		  Package newPackage;
 		  
 		  for (int i=0 ; i < 9 ; i++){
-			  newPackage = packageConstructor.makePackage(client, whatWeHave);
+			  newPackage = packageConstructor.makePackage(client, whatWeHave, true);
 			  if (newPackage.getUtility() > bestUtility){
 				  bestPackage = newPackage;
 				  bestUtility = newPackage.getUtility();
