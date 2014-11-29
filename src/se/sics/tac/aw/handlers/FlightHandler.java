@@ -119,18 +119,21 @@ public class FlightHandler extends Handler {
 		
 		Bid bid = new Bid(auction);
 
+		double gameTime = (double) agent.getGameTime();
+		gameTime/=10000;
+		
 		auctionHistory[auction][timeInterval] = (int) Math.ceil(agent.getQuote(auction).getAskPrice());
 		
 		HermesAgent.addToLog("Price for auction " + auction + " is now: " + auctionHistory[auction][timeInterval]);
 		
-		if (timeInterval==0 && auctionHistory[auction][timeInterval]<300)		//Initial <300 buying
+		if (gameTime < 1 && auctionHistory[auction][timeInterval]<300)		//Initial <300 buying
 		{
 			HermesAgent.addToLog("Meets initial criteria of price < 300");
 			
 			buyAtCurrentPrice(auction);
 		}
 		
-		else if (auctionHistory[auction][timeInterval]>450 && timeInterval<7 && timeInterval!=0)   	//if the price is above 450 and we still need it - buy b4 too late
+		else if (auctionHistory[auction][timeInterval]>450 && gameTime<7 && gameTime>0)   	//if the price is above 450 and we still need it - buy b4 too late
 		{																		//or if it climbs too fast - do the same
 		
 			HermesAgent.addToLog("Meets the criteria of price>450 in the first 70 sec");
@@ -138,7 +141,7 @@ public class FlightHandler extends Handler {
 			buyAtCurrentPrice(auction);
 		}
 		
-		else if (timeInterval >= 7 && timeInterval < 48)
+		else if (gameTime >= 7 && gameTime < 48)
 		{
 			trend[auction] = TrendCalc(auction);
 		
@@ -153,7 +156,7 @@ public class FlightHandler extends Handler {
 			}
 		}
 		
-		else if (timeInterval >= 48)
+		else if (gameTime >= 48)
 		{
 			HermesAgent.addToLog("Meets the criteria of time>7min");
 			
