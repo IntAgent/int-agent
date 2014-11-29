@@ -27,11 +27,15 @@ public class HermesAgent extends AgentImpl {
 	}
 
 	  protected void init(ArgEnumerator args) {
-		hotelHandler = new HotelHandler(agent);
-		entHandler = new EntertainmentHandler(agent);
-		flightHandler = new FlightHandler(agent);
-		packageConstructor = new PackageConstructor(agent);
-		packageSet = new PackageSet(agent);
+		  initForNewGame();
+	  }
+	  
+	  private void initForNewGame() {
+			hotelHandler = new HotelHandler(agent);
+			entHandler = new EntertainmentHandler(agent);
+			flightHandler = new FlightHandler(agent);
+			packageConstructor = new PackageConstructor(agent);
+			packageSet = new PackageSet(agent);
 	  }
 	  
 	  private void fillInitialSpareResources(){
@@ -161,6 +165,7 @@ public class HermesAgent extends AgentImpl {
 
 	  public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
+		initForNewGame();
 		
 		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
