@@ -125,46 +125,20 @@ public class FlightHandler extends Handler {
 		
 		if (timeInterval==0 && auctionHistory[auction][timeInterval]<300)		//Initial <300 buying
 		{
-			HermesAgent.addToLog("Meets initial criteria of <300");
+			HermesAgent.addToLog("Meets initial criteria of price < 300");
 			
-			for (int client=0; client < 8 ; client++){
-			//If the client wants something from this auction
-				
-			if (agent.getBidder(auction, client) != -1) {
-
-					int price = auctionHistory[auction][timeInterval]; 			// current auction price				
-					
-					//Put the latest price in the matrix
-					agent.setBidder(auction, client, price);
-				
-					//Bid for that client
-					bid.addBidPoint(1, price);
-				}
-			}
+			buyAtCurrentPrice(auction);
 		}
 		
-		if (auctionHistory[auction][timeInterval]>450 && timeInterval<7 && timeInterval!=0)   	//if the price is above 450 and we still need it - buy b4 too late
+		else if (auctionHistory[auction][timeInterval]>450 && timeInterval<7 && timeInterval!=0)   	//if the price is above 450 and we still need it - buy b4 too late
 		{																		//or if it climbs too fast - do the same
 		
-			HermesAgent.addToLog("Meets the criteria of b4 sec 70 buy!");
+			HermesAgent.addToLog("Meets the criteria of price>450 in the first 70 sec");
 			
-			for (int client=0; client < 8 ; client++){
-			//If the client wants something from this auction
-				
-			if (agent.getBidder(auction, client) != -1) {
-
-					int price = auctionHistory[auction][timeInterval]; 			// current auction price				
-					
-					//Put the latest price in the matrix
-					agent.setBidder(auction, client, price);
-				
-					//Bid for that client
-					bid.addBidPoint(1, price);
-				}
-			}
+			buyAtCurrentPrice(auction);
 		}
 		
-		if (timeInterval >= 7 && timeInterval < 48)
+		else if (timeInterval >= 7 && timeInterval < 48)
 		{
 			trend[auction] = TrendCalc(auction);
 		
@@ -173,42 +147,36 @@ public class FlightHandler extends Handler {
 			if (auctionHistory[auction][timeInterval]>450 || trend[auction]>6-0.25*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
 			{																		//or if it climbs too fast - do the same
 		
-				HermesAgent.addToLog("Meets the criteria to buy!");
+				HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
 			
-				for (int client=0; client < 8 ; client++){
-					//If the client wants something from this auction
-				
-					if (agent.getBidder(auction, client) != -1) {
-
-						int price = auctionHistory[auction][timeInterval]; 			// current auction price				
-					
-						//Put the latest price in the matrix
-						agent.setBidder(auction, client, price);
-				
-						//Bid for that client
-						bid.addBidPoint(1, price);
-					}
-				}
+				buyAtCurrentPrice(auction);
 			}
 		}
 		
-		if (timeInterval >= 48)
+		else if (timeInterval >= 48)
 		{
-			HermesAgent.addToLog("Meets the criteria to buy!");
+			HermesAgent.addToLog("Meets the criteria of time>7min");
 			
-			for (int client=0; client < 8 ; client++){
-				//If the client wants something from this auction
-			
-				if (agent.getBidder(auction, client) != -1) {
+			buyAtCurrentPrice(auction);
+		}
+	}
+	
+	public void buyAtCurrentPrice(int auction) {
+		
+		Bid bid = new Bid(auction);
+		
+		for (int client=0; client < 8 ; client++){
+			//If the client wants something from this auction
+		
+			if (agent.getBidder(auction, client) != -1) {
 
-					int price = auctionHistory[auction][timeInterval]; 			// current auction price				
-				
-					//Put the latest price in the matrix
-					agent.setBidder(auction, client, price);
+				int price = auctionHistory[auction][timeInterval]; 			// current auction price				
 			
-					//Bid for that client
-					bid.addBidPoint(1, price);
-				}
+				//Put the latest price in the matrix
+				agent.setBidder(auction, client, price);
+		
+				//Bid for that client
+				bid.addBidPoint(1, price);
 			}
 		}
 		
@@ -217,6 +185,8 @@ public class FlightHandler extends Handler {
 			agent.submitBid(bid);
 		}
 	}
+	
+
 
 	@Override
 	public void quoteUpdated(Quote quote, int auction) {
