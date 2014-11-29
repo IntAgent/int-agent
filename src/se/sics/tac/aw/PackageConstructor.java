@@ -31,7 +31,7 @@ public class PackageConstructor {
 	private int avrBHotel = 40;
 	private int avrEntertainment = 80; // not sure there is a difference in price between different entert's...
 	
-	/**public int [] curFlight = new int[8];
+	/**public int [] curFlight = new int[8];		//!!!!!initialisation!!!!!!!!!!!
 	public int [] curHotel = new int[8];*/
 	
 	
@@ -192,13 +192,13 @@ public class PackageConstructor {
 			break;
 		}
 		/**	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!This is to work with curFlight prices!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		switch (PopIndx) // Get in/out flight dates into corresponding var's... Looks bad, i know...
+		switch (PopIndx) 					// Get in/out flight dates into corresponding var's... Looks bad, i know...
 		{
 		case 0:
 			inDate=1;
 			outDate=2;
-			if (WhatWeHave[0]==1)			// Those "if's" are to see if we already have flights for those days
-				Utility+=curFligth[0]-5;		// so we can encourage our population to use them.
+			if (WhatWeHave[0]==1)			
+				Utility+=curFligth[0]-5;		
 			if (WhatWeHave[4]==1)
 				Utility+=curFligth[4]-5;
 			break;
@@ -297,6 +297,11 @@ public class PackageConstructor {
 		}
 		if (cH == outDate-inDate)												// Add pref bonus if we do...
 			Utility+= ClientPref [2] - (avrGHotel-avrBHotel)*(outDate-inDate);	// Substract avr price difference between good and bad hotel*#of days
+			/**for (int i=inDate; i<outDate; i++)
+			 * {
+			 * 		Utility-=curHotel[i+3]-curHotel[i-1]);
+			 * }
+			 * Utility+=ClientPref[2];				*/
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		for (int i=0; i<4; i++)							// ENTERTAINMENT // CAUTION!!! This part looks like shit! Filling out arrays according to our individual. 
