@@ -182,6 +182,7 @@ public class FlightHandler extends Handler {
 		
 		//If there is at least one bid to be sent
 		if (bid.getNoBidPoints() > 0){
+			HermesAgent.addToLog("-> Sending bid for auction " + auction);
 			agent.submitBid(bid);
 		}
 	}
