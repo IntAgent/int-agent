@@ -40,20 +40,19 @@ public class HotelHandler extends Handler {
 	      int alloc = agent.getAllocation(auction);
 	      if (alloc > 0 && quote.hasHQW(agent.getBid(auction)) &&
 		  quote.getHQW() < alloc) {
+	    	  
 			for(int client=0 ; client < 8 ; client++){
+				
 				if (agent.getBidder(auction, client) != -1) {
-			    	int askPrice = (int) Math.ceil(quote.getAskPrice());
-			    	int newPrice = 0;
-			    	if (agent.getBidder(auction, client) <= askPrice){
+			    	
+					int askPrice = (int) Math.ceil(quote.getAskPrice());
+			    	
+					if (agent.getBidder(auction, client) <= askPrice){
+			    		
+						int newPrice = askPrice + 50;
 			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
-			    		newPrice = askPrice + 50;
-			    	}
-			    	else { 
-			    		HermesAgent.addToLog("> askprice -> New price : " + newPrice);
-			    		newPrice = agent.getBidder(auction, client); }
-			    	
-			    	
-					agent.setBidder(auction, client, newPrice);
+			    		agent.setBidder(auction, client, newPrice);
+			    	} else {HermesAgent.addToLog("Already > askPrice :" + agent.getBidder(auction, client));} 	
 				}
 			}
 			

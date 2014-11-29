@@ -121,15 +121,23 @@ public class FlightHandler extends Handler {
 
 		auctionHistory[auction][timeInterval] = (int) Math.ceil(agent.getQuote(auction).getAskPrice());
 		
+		HermesAgent.addToLog("Price for auction " + auction + " is now: " + auctionHistory[auction][timeInterval]);
+		
 		trend[auction] = TrendCalc(auction);
 		
-		for (int client=0; client < 8 ; client++){
-			//If the client wants something from this auction
-			if (agent.getBidder(auction, client) != -1) {
-				if (auctionHistory[client][timeInterval]>450 || trend[auction]>5)   	//if the price is above 450 and we still need it - buy b4 too late
-				{																		//or if it climbs too fast - do the same
+		HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
 
-					int price = auctionHistory[client][timeInterval]; 			// current auction price				
+		if (auctionHistory[auction][timeInterval]>450 || trend[auction]>5)   	//if the price is above 450 and we still need it - buy b4 too late
+		{																		//or if it climbs too fast - do the same
+		
+			HermesAgent.addToLog("Meets the criteria to buy!");
+			
+			for (int client=0; client < 8 ; client++){
+			//If the client wants something from this auction
+				
+			if (agent.getBidder(auction, client) != -1) {
+
+					int price = auctionHistory[auction][timeInterval]; 			// current auction price				
 					
 					//Put the latest price in the matrix
 					agent.setBidder(auction, client, price);
