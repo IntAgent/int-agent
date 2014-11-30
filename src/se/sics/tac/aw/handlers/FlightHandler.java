@@ -1,5 +1,7 @@
 package se.sics.tac.aw.handlers;
 
+import java.util.Arrays;
+
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.HermesAgent;
 import se.sics.tac.aw.PackageSet;
@@ -167,6 +169,9 @@ public class FlightHandler extends Handler {
 	public void buyAtCurrentPrice(int auction) {
 		
 		Bid bid = new Bid(auction);
+		
+		HermesAgent.addToLog("Bidder vector for this auction: " + Arrays.toString(agent.getBidderVector(auction)));
+		HermesAgent.addToLog("Allocation for this auction: " + agent.getAllocation(auction));
 		
 		for (int client=0; client < 8 ; client++){
 			//If the client wants something from this auction

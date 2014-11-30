@@ -717,6 +717,10 @@ public class TACAgent implements Task, TACMessageReceiver {
 	  return bidders[auction][client];
   }
   
+  public int[] getBidderVector(int auction){
+	  return bidders[auction];
+  }
+  
   public void setBidder(int auction, int client, int value){
 	  bidders[auction][client] = value;
   }

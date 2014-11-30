@@ -31,6 +31,8 @@ public class HermesAgent extends AgentImpl {
 	  }
 	  
 	  private void initForNewGame() {
+		  	hotelsClosed = new int[8];
+		  	spareResources = new int[28];
 			hotelHandler = new HotelHandler(agent);
 			entHandler = new EntertainmentHandler(agent);
 			flightHandler = new FlightHandler(agent);
@@ -165,7 +167,6 @@ public class HermesAgent extends AgentImpl {
 
 	  public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
-		initForNewGame();
 		
 		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
@@ -284,6 +285,14 @@ public class HermesAgent extends AgentImpl {
 		    }
 		    
 		    log.fine(res);
+		    
+			initForNewGame();
+			
+		    for (int i=0 ; i < 28 ; i++){
+		    	for (int j=0; j < 8 ; j++){
+		    		agent.deleteBidder(j, i);
+		    	}
+		    }
 	  }
 
 	  public void auctionClosed(int auction) {
