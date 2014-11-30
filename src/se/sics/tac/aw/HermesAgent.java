@@ -120,6 +120,7 @@ public class HermesAgent extends AgentImpl {
 			for (int a=0 ; a < l.size() ; a++){
 				int auction = l.get(a);
 				if (spareResources[auction] > 0) {
+					packageSet.get(i).setFlagFor(auction);
 					spareResources[auction]--;
 				}
 			}
@@ -128,10 +129,13 @@ public class HermesAgent extends AgentImpl {
 			// Add every element of the package to the list of things we need to get
 			for (int j=0 ; j < l.size() ; j++) {
 				int auction = l.get(j);
-				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
-				
-				//For our new handlers:
-				agent.addBidder(i,auction);
+
+				if (!packageSet.get(i).hasBeenObtained(auction)){
+					agent.setAllocation(auction, agent.getAllocation(auction) + 1);
+					
+					//For our new handlers:
+					agent.addBidder(i,auction);
+				}
 			}
 	  }
 	  
