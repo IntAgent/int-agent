@@ -267,7 +267,7 @@ public class PackageConstructor {
 			if (Pop[PopIndx][i] == 1)				// Check if we have it in package
 			{
 				if (FlagString[i] == 0)				// Chek if we already own it
-					Utility-=curHotel[i];			// If we don't - substract avr price
+					Utility-=(curHotel[i]+1);			// If we don't - substract avr price
 				else
 					Utility-= 5;					// If we do - substract small value
 			}										// Note: we do not worry about flagstring having -1 as Pop[PopIndx][i] == 1 will be false in that case
@@ -278,7 +278,7 @@ public class PackageConstructor {
 			if (Pop[PopIndx][i] == 1)
 			{
 				if (FlagString[i] == 0)				
-					Utility-=curHotel[i];
+					Utility-=(curHotel[i]+1);
 				else
 					Utility-= 5;			
 			}
