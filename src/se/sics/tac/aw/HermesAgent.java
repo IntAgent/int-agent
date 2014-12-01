@@ -120,23 +120,26 @@ public class HermesAgent extends AgentImpl {
 			for (int a=0 ; a < l.size() ; a++){
 				int auction = l.get(a);
 				if (spareResources[auction] > 0) {
+					log.info("We had a spare (auction "+ auction + ": added to the package.");
 					packageSet.get(i).setFlagFor(auction);
+					log.info("Allocation: auction " + auction + " is added to the sum (from spare)");
+					agent.setAllocation(auction, agent.getAllocation(auction) + 1);
 					spareResources[auction]--;
 				}
 			}
 			//log.fine("SpareResources: " + Arrays.toString(spareResources));
 			
 			// Add every element of the package to the list of things we need to get
+			log.info("All elements of the package that we don't have yet are added to allocations:");
 			for (int j=0 ; j < l.size() ; j++) {
 				int auction = l.get(j);
 
 				if (!packageSet.get(i).hasBeenObtained(auction)){
+					log.info("Allocation: auction " + auction + " is added to the sum (still need to get)");
 					agent.setAllocation(auction, agent.getAllocation(auction) + 1);
-					
-					//For our new handlers:
-					agent.addBidder(i,auction);
 				}
 			}
+			displayAllocations();
 	  }
 	  
 	  public void calculateAllocation() {
@@ -145,7 +148,8 @@ public class HermesAgent extends AgentImpl {
 		for (int i = 0 ; i < 8 ; i++) {
 			calculateSeparateAllocation(i, true);
 		}
-		hotelHandler.addOwnDemand(packageSet); //TODO gerer updates
+		
+		// hotelHandler.addOwnDemand(packageSet); //TODO gerer updates
 	  }
 
 	  public void quoteUpdated(Quote quote) {
@@ -154,32 +158,32 @@ public class HermesAgent extends AgentImpl {
 
 		//1) HOTEL
 	    if (auctionCategory == TACAgent.CAT_HOTEL) {
-	    	hotelHandler.quoteUpdated(quote, auction);
+	    	hotelHandler.quoteUpdated(quote, auction, packageSet);
 	    }
 		
 		//2) ENTERTAINMENT
 		else if (auctionCategory == TACAgent.CAT_ENTERTAINMENT) {
-			entHandler.quoteUpdated(quote, auction);
+			entHandler.quoteUpdated(quote, auction, packageSet);
 	    }
 	    
 	    //3) FLIGHT
 		else {
-			flightHandler.quoteUpdated(quote, auction);
+			flightHandler.quoteUpdated(quote, auction, packageSet);
 		}
 	  }
 
-
+	  public void displayAllocations() {
+			String allocations = "ALLOCATIONS VECTOR:\n";
+			for (int i=0 ; i < 28 ; i++){
+				allocations += "Auction " + i + ":" + agent.getAllocation(i) + "\n";
+			}
+			log.info(allocations);
+	  }
+	  
 	  public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
 		
-		String bidders = "BIDDERS MATRIX:\n";
-		String allocations = "ALLOCATIONS VECTOR:\n";
-		for (int i=0 ; i < 28 ; i++){
-			bidders += "Auction " + i + ":" + Arrays.toString(agent.getBidderVector(i)) + "\n";
-			allocations += "Auction " + i + ":" + agent.getAllocation(i);
-		}
-		log.info(bidders);
-		log.info(allocations);
+		displayAllocations();
 		
 		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
@@ -300,12 +304,7 @@ public class HermesAgent extends AgentImpl {
 		    log.fine(res);
 		    
 			initForNewGame();
-			
-		    for (int i=0 ; i < 28 ; i++){
-		    	for (int j=0; j < 8 ; j++){
-		    		agent.deleteBidder(j, i);
-		    	}
-		    }
+
 	  }
 
 	  public void auctionClosed(int auction) {
@@ -329,22 +328,14 @@ public class HermesAgent extends AgentImpl {
 						log.fine("------OLD PACKAGE------");
 						displayPackage(c);
 						
-						String bidders = "OLD BIDDERS MATRIX:\n";
-						String allocations = "OLD ALLOCATIONS VECTOR:\n";
-						for (int j=0 ; j < 28 ; j++){
-							bidders += "Auction " + j + ":" + Arrays.toString(agent.getBidderVector(j)) + "\n";
-							allocations += "Auction " + j + ":" + agent.getAllocation(j);
-						}
-						log.info(bidders);
-						log.info(allocations);
+						displayAllocations();
 						
 						List<Integer> elements = packageSet.get(c).getElements();
 						for (int i=0 ; i < elements.size() ; i++){
 							//Take the elements off the Allocations
 							
-				    		HermesAgent.addToLog("Deleting auction " + elements.get(i) + "from client " + c);
+				    		HermesAgent.addToLog("Allocation: Deleting auction " + elements.get(i) + " from client " + c);
 							agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
-							agent.deleteBidder(c, auction);
 							
 							//Add elements obtained from currentPackage to SpareResources
 							if (packageSet.get(c).hasBeenObtained(elements.get(i))){
@@ -357,15 +348,6 @@ public class HermesAgent extends AgentImpl {
 						
 						log.fine("------NEW PACKAGE------");
 						displayPackage(c);
-						
-						bidders = "NEW BIDDERS MATRIX:\n";
-						allocations = "NEW ALLOCATIONS VECTOR:\n";
-						for (int j=0 ; j < 28 ; j++){
-							bidders += "Auction " + j + ":" + Arrays.toString(agent.getBidderVector(j)) + "\n";
-							allocations += "Auction " + j + ":" + agent.getAllocation(j);
-						}
-						log.info(bidders);
-						log.info(allocations);
 						
 					}
 				}

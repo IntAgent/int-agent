@@ -48,10 +48,8 @@ public class PackageSet {
 		    		p.setFlagFor(auction);
 		    		HermesAgent.addToLog("Yay! Client " + p.getClient() + " got " + agent.getAuctionTypeAsString(auction) + " (" + auction +") U=" + p.getUtility());
 		    		
-		    		agent.deleteBidder(p.getClient(), auction);
-		    		HermesAgent.addToLog("Bidder Matrix (becomes -1 for him) is now:" + Arrays.toString(agent.getBidderVector(auction)));
-		    		HermesAgent.addToLog("Allocation (doesn't change) is now:" + agent.getAllocation(auction));
-		    		HermesAgent.addToLog("Owns (becomes +1) is now:" + agent.getOwn(auction));
+		    		HermesAgent.addToLog("Allocation is:" + agent.getAllocation(auction));
+		    		HermesAgent.addToLog("Owns is now:" + agent.getOwn(auction));
 		    		HermesAgent.addToLog("-------------------------------------------------");
 		    		nbToDispatch--;
 		    	}

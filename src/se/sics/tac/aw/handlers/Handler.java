@@ -10,7 +10,7 @@ public abstract class Handler {
 	protected TACAgent agent;
 	protected float[] prices;
 
-	public abstract void quoteUpdated(Quote quote, int auction);
+	public abstract void quoteUpdated(Quote quote, int auction, PackageSet packageSet);
 
 	public abstract void sendBids(int i);
 	

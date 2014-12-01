@@ -16,7 +16,7 @@ public class EntertainmentHandler extends Handler {
 	}
 	
 	@Override
-	public void quoteUpdated(Quote quote, int auction) {
+	public void quoteUpdated(Quote quote, int auction, PackageSet packageSet) {
 	      int alloc = agent.getAllocation(auction) - agent.getOwn(auction);
 	      if (alloc != 0) {
 			Bid bid = new Bid(auction);

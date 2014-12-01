@@ -184,7 +184,7 @@ public class FlightHandler extends Handler {
 
 
 	@Override
-	public void quoteUpdated(Quote quote, int auction) {
+	public void quoteUpdated(Quote quote, int auction, PackageSet packageSet) {
 		//we update the current time only once per 10 sec, let's say at the first auction
 		if (auction == 0) {
 			timeInterval++;

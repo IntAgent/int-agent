@@ -23,57 +23,40 @@ public class HotelHandler extends Handler {
 		r = new Random();
 		estimatedOthersDemand = new int[4];
 		estimatedCurrentDemand = new int[4];
-		
-		//For all hotel auctions (8-15), initialize to -1
-		for (int i=0 ; i < 8 ; i++){
-			for (int j=8 ; j < 16 ; j++){
-				agent.setBidder(j, i, -1);
-			}
-		}
 	}
 	
 	@Override
-	public void quoteUpdated(Quote quote, int auction) {
+	public void quoteUpdated(Quote quote, int auction, PackageSet packageSet) {
 		HermesAgent.addToLog("HOTELHANDLER.QUOTEUPATED()");
 		HermesAgent.addToLog("Quote of auction " + auction + " is now " + quote.getAskPrice());
 		
-	      int alloc = agent.getAllocation(auction);
-	      if (alloc > 0 && quote.hasHQW(agent.getBid(auction)) &&
+		Bid bid = new Bid(auction);
+		
+	    int alloc = agent.getAllocation(auction);
+	    
+	    if (alloc > 0 && quote.hasHQW(agent.getBid(auction)) &&
 		  quote.getHQW() < alloc) {
 	    	  
 			for(int client=0 ; client < 8 ; client++){
 				
-				if (agent.getBidder(auction, client) != -1) {
+				//If the client wants something from this auction
+				if (packageSet.get(client).isInPackage(auction) && !packageSet.get(client).hasBeenObtained(auction)) {
 			    	
 					int askPrice = (int) Math.ceil(quote.getAskPrice());
-			    	
-					if (agent.getBidder(auction, client) <= askPrice){
-			    		
-						int diff = utilityDifferenceWithAlternative(auction, client);
-						HermesAgent.addToLog("Difference of U is thus " + diff);
-						
-						//If it's in our interest to go on bidding
-						if (diff >= 0){
-							if (diff==0) { diff++; }
-							int newPrice = askPrice + diff;
-				    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
-				    		agent.setBidder(auction, client, newPrice);	
-						}
-			    	} else {HermesAgent.addToLog("Already > askPrice :" + agent.getBidder(auction, client));} 	
-				}
-			}
-			
-			Bid bid = new Bid(auction);
-			
-			for (int client=0; client < 8 ; client++){
-				//If the client wants something from this auction
-				if (agent.getBidder(auction, client) != -1) {
+				
+					int diff = utilityDifferenceWithAlternative(auction, client);
+					HermesAgent.addToLog("Difference of U is thus " + diff);
 					
-					//Bid for that client
-					bid.addBidPoint(1, agent.getBidder(auction, client));
+					//If it's in our interest to go on bidding
+					if (diff >= 0){
+						if (diff==0) { diff++; }
+						int newPrice = askPrice + diff;
+			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
+			    		bid.addBidPoint(1, newPrice);
+					}
 				}
 			}
-			
+
 			HermesAgent.addToLog("ReplaceBid");
 			agent.replaceBid(agent.getBid(auction), bid);
 	      }
@@ -89,12 +72,9 @@ public class HotelHandler extends Handler {
 		
 		for (int client=0; client < 8 ; client++){
 			//If the client wants something from this auction
-			if (agent.getBidder(auction, client) != -1) {
+			if (packageSet.get(client).isInPackage(auction)) {
 				
 				int price = historicalPrices[auction-8];
-				
-				//Put the latest price in the matrix
-				agent.setBidder(auction, client, price);
 				
 				//Bid for that client
 				bid.addBidPoint(1, price);
