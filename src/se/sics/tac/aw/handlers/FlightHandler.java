@@ -21,13 +21,6 @@ public class FlightHandler extends Handler {
 		trend = new double[8];
 		this.agent = agent;
 		
-		//For all flight auctions (0-7), initialize to -1
-		for (int i=0 ; i < 8 ; i++){
-			for (int j=0 ; j < 8 ; j++){
-				agent.setBidder(j, i, -1);
-			}
-		}
-		
 		Initialisation();
 	}
 	
@@ -170,22 +163,15 @@ public class FlightHandler extends Handler {
 		
 		Bid bid = new Bid(auction);
 		
-		HermesAgent.addToLog("Bidder vector for this auction: " + Arrays.toString(agent.getBidderVector(auction)));
 		HermesAgent.addToLog("Allocation for this auction: " + agent.getAllocation(auction));
 		
-		for (int client=0; client < 8 ; client++){
-			//If the client wants something from this auction
+		int alloc = agent.getAllocation(auction) - agent.getOwn(auction);
 		
-			if (agent.getBidder(auction, client) != -1) {
-
-				int price = auctionHistory[auction][timeInterval]; 			// current auction price				
-			
-				//Put the latest price in the matrix
-				agent.setBidder(auction, client, price);
+		if (alloc > 0) {
+				int price = auctionHistory[auction][timeInterval]; 			// current auction price
 		
 				//Bid for that client
-				bid.addBidPoint(1, price);
-			}
+				bid.addBidPoint(alloc, price);
 		}
 		
 		//If there is at least one bid to be sent

@@ -342,7 +342,7 @@ public class HermesAgent extends AgentImpl {
 						for (int i=0 ; i < elements.size() ; i++){
 							//Take the elements off the Allocations
 							
-				    		
+				    		HermesAgent.addToLog("Deleting auction " + elements.get(i) + "from client " + c);
 							agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
 							agent.deleteBidder(c, auction);
 							
