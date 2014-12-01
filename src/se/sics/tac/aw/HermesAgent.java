@@ -172,9 +172,15 @@ public class HermesAgent extends AgentImpl {
 	  public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
 		
+		String bidders = "BIDDERS MATRIX:\n";
+		for (int i=0 ; i < 28 ; i++){
+			bidders += "Auction " + i + ":" + Arrays.toString(agent.getBidderVector(i)) + "\n";
+		}
+		log.info(bidders);
+		
 		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
-			res += "Client " + (i+1) + ":\n";
+			res += "Preferences: Client " + (i+1) + ":\n";
 			res += "Arrival on day " + agent.getClientPreference(i, agent.ARRIVAL) + "\n";
 			res += "Departure on day " + agent.getClientPreference(i, agent.DEPARTURE) + "\n";
 			res += "Hotel preference: " + agent.getClientPreference(i, agent.HOTEL_VALUE) + "\n";
