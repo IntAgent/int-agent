@@ -202,20 +202,20 @@ public class HermesAgent extends AgentImpl {
 		fillInitialSpareResources();
 	    calculateAllocation();
 	    dispatchDefaultEntertainment();
-	    sendBids();
+	    sendInitialBids();
 	  }
 
-	  private void sendBids() {
+	  private void sendInitialBids() {
 	    for (int i = 0, n = agent.getAuctionNo(); i < n; i++) {
 		  
 	      switch (agent.getAuctionCategory(i)) {
 
 			  case TACAgent.CAT_HOTEL:
-				  hotelHandler.sendSeparateBids(i, packageSet);
+				  hotelHandler.sendInitialBids(i, packageSet);
 			break;
 			
 			  case TACAgent.CAT_ENTERTAINMENT:
-				  entHandler.sendBids(i);
+				  entHandler.sendInitialBids(i, packageSet);
 			break;
 			
 			  default:
@@ -352,8 +352,6 @@ public class HermesAgent extends AgentImpl {
 					}
 				}
 			}
-			
-			//TODO manage the bidUpdate in the AuctionHandlers
 		  }
 		
 	  public void quoteUpdated(int auctionCategory) {

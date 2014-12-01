@@ -12,11 +12,11 @@ import se.sics.tac.aw.TACAgent;
 
 public class HotelHandler extends Handler {
 
-	Random r;
-	int[] estimatedOthersDemand;
-	int[] estimatedCurrentDemand;
+	private Random r;
+	private int[] estimatedOthersDemand;
+	private int[] estimatedCurrentDemand;
 	
-	int[] historicalPrices = {10, 130, 110, 50, 100, 190, 150, 110};
+	private int[] historicalPrices = {10, 130, 110, 50, 100, 190, 150, 110};
 	
 	public HotelHandler(TACAgent agent) {
 		this.agent = agent;
@@ -68,7 +68,7 @@ public class HotelHandler extends Handler {
 	/**
 	 * Initial bid, based on the historical prices
 	 */
-	public void sendSeparateBids(int auction, PackageSet packageSet) {
+	public void sendInitialBids(int auction, PackageSet packageSet) {
 		HermesAgent.addToLog("HOTELHANDLER.SENDSEPARATEBIDS()");
 		Bid bid = new Bid(auction);
 		
@@ -108,7 +108,7 @@ public class HotelHandler extends Handler {
 	    }
 	}
 	
-	public void calculateAvgDemand(){
+	private void calculateAvgDemand(){
 		estimatedOthersDemand = new int[4];
 		
 		for (int i=0; i < 4*56 ; i++){
@@ -170,7 +170,7 @@ public class HotelHandler extends Handler {
 		}
 	}
 	
-	public int utilityDifferenceWithAlternative(int auction, int client) {
+	private int utilityDifferenceWithAlternative(int auction, int client) {
 		
 		PackageConstructor packageConstructor = new PackageConstructor(agent);
 		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(client);
@@ -186,7 +186,7 @@ public class HotelHandler extends Handler {
 		return (utilityOfCurrentPackage - utilityIfWeDontGetIt);
 	}
 	
-	public void howBadDoWeWantIt(int auction, Package p) {
+	private void howBadDoWeWantIt(int auction, Package p) {
 		int otherHotelForThatDay = 0;
 		if (auction >= 12) { otherHotelForThatDay = auction-4; }
 		else { otherHotelForThatDay = auction+4; }
@@ -210,12 +210,6 @@ public class HotelHandler extends Handler {
 		
 		double percentageCompletion = p.completionPercentage();
 	  
-	}
-
-	@Override
-	public void sendBids(int i) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

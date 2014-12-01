@@ -9,7 +9,7 @@ import se.sics.tac.aw.TACAgent;
 public class EntertainmentHandler extends Handler {
 
 	//protected int[][] maxPrice = new int[8][3];
-	protected float averageBidPrice;
+	private float averageBidPrice;
 
 
 	///////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ public class EntertainmentHandler extends Handler {
 
 
 	//this method is called at the start of the game
-	public void sendBids(int auction) 
+	public void sendInitialBids(int auction, PackageSet packageSet) 
 	{
 		//try to buy some tickets at price zero.
 		Bid bid = new Bid(auction);
@@ -81,7 +81,7 @@ public class EntertainmentHandler extends Handler {
 
 
 	//buy at a low price and increment it by time until client preference
-	public void buyDuringGame(Quote quote, int auction, PackageSet packageSet)
+	private void buyDuringGame(Quote quote, int auction, PackageSet packageSet)
 	{
 		//make a new buying bid with quantity = 1 and  price = time in minutes * clientPrefrence/8;
 
@@ -120,7 +120,7 @@ public class EntertainmentHandler extends Handler {
 
 
 	//I'll try to buy this ticket which I need at the end of the game for the ask price if it is less than the client preference 
-	public void buyAtTheEnd(Quote quote, int auction, PackageSet packageSet)
+	private void buyAtTheEnd(Quote quote, int auction, PackageSet packageSet)
 	{ 
 		Bid buyingBid = new Bid(auction);
 
@@ -160,7 +160,7 @@ public class EntertainmentHandler extends Handler {
 
 
 
-	public void sellAtTheEnd(Quote quote, int auction)
+	private void sellAtTheEnd(Quote quote, int auction)
 	{
 		//at the end, we try as we could to sell any extra tickets by the bid price , 
 		//but this bid price should be less than the cost of this ticket.
@@ -194,15 +194,6 @@ public class EntertainmentHandler extends Handler {
 		}
 
 	}
-
-	//What is this?
-	@Override
-	public void sendSeparateBids(int i, PackageSet packageSet)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 
 }
 
