@@ -173,10 +173,13 @@ public class HermesAgent extends AgentImpl {
 		log.fine("Game " + agent.getGameID() + " started!");
 		
 		String bidders = "BIDDERS MATRIX:\n";
+		String allocations = "ALLOCATIONS VECTOR:\n";
 		for (int i=0 ; i < 28 ; i++){
 			bidders += "Auction " + i + ":" + Arrays.toString(agent.getBidderVector(i)) + "\n";
+			allocations += "Auction " + i + ":" + agent.getAllocation(i);
 		}
 		log.info(bidders);
+		log.info(allocations);
 		
 		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
@@ -325,12 +328,23 @@ public class HermesAgent extends AgentImpl {
 						
 						log.fine("------OLD PACKAGE------");
 						displayPackage(c);
-						log.fine("Old allocations:" + Arrays.toString(agent.getAllocations()));
+						
+						String bidders = "OLD BIDDERS MATRIX:\n";
+						String allocations = "OLD ALLOCATIONS VECTOR:\n";
+						for (int j=0 ; j < 28 ; j++){
+							bidders += "Auction " + j + ":" + Arrays.toString(agent.getBidderVector(j)) + "\n";
+							allocations += "Auction " + j + ":" + agent.getAllocation(j);
+						}
+						log.info(bidders);
+						log.info(allocations);
 						
 						List<Integer> elements = packageSet.get(c).getElements();
 						for (int i=0 ; i < elements.size() ; i++){
 							//Take the elements off the Allocations
+							
+				    		
 							agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
+							agent.deleteBidder(c, auction);
 							
 							//Add elements obtained from currentPackage to SpareResources
 							if (packageSet.get(c).hasBeenObtained(elements.get(i))){
@@ -343,7 +357,16 @@ public class HermesAgent extends AgentImpl {
 						
 						log.fine("------NEW PACKAGE------");
 						displayPackage(c);
-						log.fine("New allocations:" + Arrays.toString(agent.getAllocations()));
+						
+						bidders = "NEW BIDDERS MATRIX:\n";
+						allocations = "NEW ALLOCATIONS VECTOR:\n";
+						for (int j=0 ; j < 28 ; j++){
+							bidders += "Auction " + j + ":" + Arrays.toString(agent.getBidderVector(j)) + "\n";
+							allocations += "Auction " + j + ":" + agent.getAllocation(j);
+						}
+						log.info(bidders);
+						log.info(allocations);
+						
 					}
 				}
 			}
