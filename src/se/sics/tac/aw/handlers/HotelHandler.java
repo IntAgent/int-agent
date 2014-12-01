@@ -57,8 +57,10 @@ public class HotelHandler extends Handler {
 				}
 			}
 
-			HermesAgent.addToLog("ReplaceBid");
-			agent.replaceBid(agent.getBid(auction), bid);
+			if (bid.getNoBidPoints() > 0){
+				HermesAgent.addToLog("ReplaceBid");
+				agent.replaceBid(agent.getBid(auction), bid);
+			}
 	      }
 	}
 
