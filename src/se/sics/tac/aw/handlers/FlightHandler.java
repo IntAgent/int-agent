@@ -111,9 +111,9 @@ public class FlightHandler extends Handler {
 
 		HermesAgent.addToLog("Price for auction " + auction + " is now: " + auctionHistory[auction][timeInterval]);
 
-		if (gameTime < 1 && auctionHistory[auction][timeInterval]<300)		//Initial <300 buying
+		if (gameTime < 1 && auctionHistory[auction][timeInterval]<250)		//Initial <250 buying
 		{
-			HermesAgent.addToLog("Meets initial criteria of price < 300");
+			HermesAgent.addToLog("Meets initial criteria of price < 250");
 
 			buyAtCurrentPrice(auction);
 		}
@@ -126,22 +126,31 @@ public class FlightHandler extends Handler {
 			buyAtCurrentPrice(auction);
 		}
 
-		else if (gameTime > 7 && gameTime < 48)
+		else if (gameTime > 7 && gameTime <= 48)
 		{
 			trend[auction] = TrendCalc(auction);
 
 			HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
+			if (auction>0 && auction<8)
+			{
+				if (auctionHistory[auction][timeInterval]>420 || trend[auction]>5-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+				{																		//or if it climbs too fast - do the same
 
-			if (auctionHistory[auction][timeInterval]>450 || trend[auction]>4-0.08*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
-			{																		//or if it climbs too fast - do the same
+					HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
 
-				HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
-
-				buyAtCurrentPrice(auction);
+					buyAtCurrentPrice(auction);
+				}
 			}
+			else if (auctionHistory[auction][timeInterval]>440 || trend[auction]>7-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+				{																		//or if it climbs too fast - do the same
+
+					HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
+
+					buyAtCurrentPrice(auction);
+				}
 		}
 
-		else if (gameTime >= 48)
+		else if (gameTime > 49)
 		{
 			HermesAgent.addToLog("Meets the criteria of time>7min");
 
