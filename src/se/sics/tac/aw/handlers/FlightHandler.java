@@ -111,66 +111,84 @@ public class FlightHandler extends Handler {
 
 		HermesAgent.addToLog("Price for auction " + auction + " is now: " + auctionHistory[auction][timeInterval]);
 
-		if (gameTime < 1 && auctionHistory[auction][timeInterval]<250)		//Initial <250 buying
-		{
-			HermesAgent.addToLog("Meets initial criteria of price < 250");
-
-			buyAtCurrentPrice(auction);
-		}
-
-		else if (auctionHistory[auction][timeInterval]>420 && gameTime<=7)   	//if the price is above 450 and we still need it - buy b4 too late
-		{																		//or if it climbs too fast - do the same
-
-			HermesAgent.addToLog("Meets the criteria of price>450 in the first 70 sec");
-
-			buyAtCurrentPrice(auction);
-		}
-
-		else if (gameTime > 7 && gameTime <= 48)
-		{
-			trend[auction] = TrendCalc(auction);
-
-			HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
-			if (auction>0 && auction<8)
-			{
-				if (auctionHistory[auction][timeInterval]>420 || trend[auction]>5-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
-				{																		//or if it climbs too fast - do the same
-
-					HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
-
-					buyAtCurrentPrice(auction);
+		HermesAgent.addToLog("Allocation for this auction: " + agent.getAllocation(auction));
+		
+		int quantity = agent.getAllocation(auction) - agent.getOwn(auction);
+		
+		if (quantity > 0){
+			
+			for (int i=0 ; i < packageSet.size() ; i++){
+				//!!! Condition also is dispatch
+				if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() < 0.5){
+					HermesAgent.addToLog("Client " + (i+1) + " still needs it but hasn't 50% of hotels");
+					quantity--;
+				}
+				else if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() >= 0.5) {
+					HermesAgent.addToLog("Client " + (i+1) + " still needs it and has over 50% of hotels!");
 				}
 			}
-			else if (auctionHistory[auction][timeInterval]>440 || trend[auction]>7-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
-				{																		//or if it climbs too fast - do the same
-
-					HermesAgent.addToLog("Meets the criteria of price>450 and trend going up too fast");
-
-					buyAtCurrentPrice(auction);
-				}
 		}
-
-		else if (gameTime > 49)
-		{
-			HermesAgent.addToLog("Meets the criteria of time>7min");
-
-			buyAtCurrentPrice(auction);
+		
+		HermesAgent.addToLog("Number of tickets to get for completed packages is:" + quantity);
+		
+		if (quantity > 0 || gameTime > 49){	
+			if (gameTime < 1 && auctionHistory[auction][timeInterval]<250)		//Initial <250 buying
+			{
+				HermesAgent.addToLog("Meets initial criteria of price < 250");
+	
+				buyAtCurrentPrice(auction, quantity);
+			}
+	
+			else if (auctionHistory[auction][timeInterval]>420 && gameTime<=7)   	//if the price is above 450 and we still need it - buy b4 too late
+			{																		//or if it climbs too fast - do the same
+	
+				HermesAgent.addToLog("Meets the criteria of price>450 in the first 70 sec");
+	
+				buyAtCurrentPrice(auction, quantity);
+			}
+	
+			else if (gameTime > 7 && gameTime <= 48)
+			{
+				trend[auction] = TrendCalc(auction);
+	
+				HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
+				if (auction>0 && auction<8)
+				{
+					if (auctionHistory[auction][timeInterval]>420 || trend[auction]>5-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+					{																		//or if it climbs too fast - do the same
+	
+						HermesAgent.addToLog("Meets the criteria of price>450 or trend going up too fast");
+	
+						buyAtCurrentPrice(auction, quantity);
+					}
+				}
+				else if (auctionHistory[auction][timeInterval]>440 || trend[auction]>7-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+					{																		//or if it climbs too fast - do the same
+	
+						HermesAgent.addToLog("Meets the criteria of price>450 or trend going up too fast");
+	
+						buyAtCurrentPrice(auction, quantity);
+					}
+			}
+	
+			else if (gameTime > 49)
+			{
+				HermesAgent.addToLog("Meets the criteria of time>7min");
+	
+				buyAtCurrentPrice(auction, quantity);
+			}
 		}
 	}
 
-	private void buyAtCurrentPrice(int auction) {
+	private void buyAtCurrentPrice(int auction, int quantity) {
 
 		Bid bid = new Bid(auction);
 
-		HermesAgent.addToLog("Allocation for this auction: " + agent.getAllocation(auction));
-
-		int alloc = agent.getAllocation(auction) - agent.getOwn(auction);
-
-		if (alloc > 0) {
+		if (quantity > 0) {
 			int price = auctionHistory[auction][timeInterval]; 			// current auction price
 
 			//Bid for that client
-			bid.addBidPoint(alloc, price);
+			bid.addBidPoint(quantity, price);
 		}
 
 		//If there is at least one bid to be sent
@@ -190,7 +208,7 @@ public class FlightHandler extends Handler {
 			HermesAgent.addToLog("TimeInterval variable is now " + timeInterval);
 		}
 
-		sendSeparateBids(auction, null);
+		sendSeparateBids(auction, packageSet);
 	}
 
 	@Override

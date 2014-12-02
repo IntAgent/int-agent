@@ -44,6 +44,9 @@ public class PackageSet {
 	    	//If this package hasn't the ticket yet
 			if (p != null) {
 		    	if (p.getFlagFor(auction) == 0) {
+		    		
+		    		//If either not a flight or a flight asked by a nearly-ready package
+		    		if (!(auction < 8) || p.hotelsPercentage() > 0.5){
 		    			
 		    		p.setFlagFor(auction);
 		    		HermesAgent.addToLog("Yay! Client " + p.getClient() + " got " + agent.getAuctionTypeAsString(auction) + " (" + auction +") U=" + p.getUtility());
@@ -52,6 +55,7 @@ public class PackageSet {
 		    		HermesAgent.addToLog("Owns is now:" + agent.getOwn(auction));
 		    		HermesAgent.addToLog("-------------------------------------------------");
 		    		nbToDispatch--;
+		    		}
 		    	}
 			}
 	    	i++;

@@ -115,30 +115,26 @@ public class HermesAgent extends AgentImpl {
 			//Display the new package in the log
 			displayPackage(i);
 			
-			//Take off the spareResources anything that was added to the package
 			List<Integer> l = packageSet.get(i).getElements();
+			
+			// Add every element of the package to the list of things we need to get
+			for (int a=0 ; a < l.size() ; a++){
+				int auction = l.get(a);
+				agent.setAllocation(auction, agent.getAllocation(auction) + 1);
+				log.info("Allocation: auction " + auction + " is added to the sum");
+			}
+			
+			//Take off the spareResources anything that was added to the package
 			for (int a=0 ; a < l.size() ; a++){
 				int auction = l.get(a);
 				if (spareResources[auction] > 0) {
 					log.info("We had a spare (auction "+ auction + ": added to the package.");
-					packageSet.get(i).setFlagFor(auction);
-					log.info("Allocation: auction " + auction + " is added to the sum (from spare)");
-					agent.setAllocation(auction, agent.getAllocation(auction) + 1);
+					packageSet.get(i).setFlagFor(auction);	
 					spareResources[auction]--;
 				}
 			}
 			//log.fine("SpareResources: " + Arrays.toString(spareResources));
-			
-			// Add every element of the package to the list of things we need to get
-			log.info("All elements of the package that we don't have yet are added to allocations:");
-			for (int j=0 ; j < l.size() ; j++) {
-				int auction = l.get(j);
 
-				if (!packageSet.get(i).hasBeenObtained(auction)){
-					log.info("Allocation: auction " + auction + " is added to the sum (still need to get)");
-					agent.setAllocation(auction, agent.getAllocation(auction) + 1);
-				}
-			}
 			displayAllocations();
 	  }
 	  
@@ -334,7 +330,7 @@ public class HermesAgent extends AgentImpl {
 						for (int i=0 ; i < elements.size() ; i++){
 							//Take the elements off the Allocations
 							
-				    		HermesAgent.addToLog("Allocation: Deleting auction " + elements.get(i) + " from client " + c);
+				    		HermesAgent.addToLog("Allocation: Deleting auction " + elements.get(i) + " from client " + (c+1));
 							agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
 							
 							//Add elements obtained from currentPackage to SpareResources

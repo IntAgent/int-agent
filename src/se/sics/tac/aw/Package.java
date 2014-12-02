@@ -87,6 +87,35 @@ public class Package {
 		return obtainedEssential*1.0/totEssential;
 	}
 	
+	public double hotelsPercentage() {
+		int obtainedEssential = 0;
+		int totEssential = 0;
+		
+		for (int key : currentPackage.keySet()) {
+		    if (key < 16 && key >= 8){
+		    	totEssential++;
+		    	if (currentPackage.get(key) == 1) {
+		    		obtainedEssential++;
+		    	}
+		    }
+		}
+		return obtainedEssential*1.0/totEssential;
+	}
+	
+	public boolean hasAllHotels() {
+		boolean allHotels = true;
+		
+		for (int key : currentPackage.keySet()) {
+		    if (key < 16 && key >= 8){
+		    	if (currentPackage.get(key) != 1) {
+		    		allHotels = false; break;
+		    	}
+		    }
+		}
+		
+		return allHotels;
+	}
+	
 	public List<Integer> getElements() {
 		List<Integer> res = new ArrayList<Integer>();
 		
