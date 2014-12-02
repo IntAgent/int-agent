@@ -132,14 +132,14 @@ public class FlightHandler extends Handler {
 		HermesAgent.addToLog("Number of tickets to get for completed packages is:" + quantity);
 		
 		if (quantity > 0 || gameTime > 49){	
-			if (gameTime < 1 && auctionHistory[auction][timeInterval]<250)		//Initial <250 buying
+			if (gameTime < 1 && auctionHistory[auction][timeInterval]<300)		//Initial <250 buying
 			{
-				HermesAgent.addToLog("Meets initial criteria of price < 250");
+				HermesAgent.addToLog("Meets initial criteria of price < 300");
 	
 				buyAtCurrentPrice(auction, quantity);
 			}
 	
-			else if (auctionHistory[auction][timeInterval]>420 && gameTime<=7)   	//if the price is above 450 and we still need it - buy b4 too late
+			else if (auctionHistory[auction][timeInterval]>410 && gameTime<=7)   	//if the price is above 450 and we still need it - buy b4 too late
 			{																		//or if it climbs too fast - do the same
 	
 				HermesAgent.addToLog("Meets the criteria of price>450 in the first 70 sec");
@@ -147,31 +147,31 @@ public class FlightHandler extends Handler {
 				buyAtCurrentPrice(auction, quantity);
 			}
 	
-			else if (gameTime > 7 && gameTime <= 48)
+			else if (gameTime > 7 && gameTime <= 50)
 			{
 				trend[auction] = TrendCalc(auction);
 	
 				HermesAgent.addToLog("Trend for auction " + auction + " is now: " + trend[auction]);
-				if (auction>0 && auction<8)
+				/*if (auction>0 && auction<8)
 				{
-					if (auctionHistory[auction][timeInterval]>420 || trend[auction]>5-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+					if (auctionHistory[auction][timeInterval]>420 || trend[auction]>3-0.06*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
 					{																		//or if it climbs too fast - do the same
 	
-						HermesAgent.addToLog("Meets the criteria of price>450 or trend going up too fast");
+						HermesAgent.addToLog("Meets the criteria of price>420 or trend going up too fast");
 	
 						buyAtCurrentPrice(auction, quantity);
 					}
-				}
-				else if (auctionHistory[auction][timeInterval]>440 || trend[auction]>7-0.1*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
+				}*/
+				if (auctionHistory[auction][timeInterval]>420 || trend[auction]>3-0.06*timeInterval)   	//if the price is above 450 and we still need it - buy b4 too late
 					{																		//or if it climbs too fast - do the same
 	
-						HermesAgent.addToLog("Meets the criteria of price>450 or trend going up too fast");
+						HermesAgent.addToLog("Meets the criteria of price>420 or trend going up too fast");
 	
 						buyAtCurrentPrice(auction, quantity);
 					}
 			}
 	
-			else if (gameTime > 49)
+			else if (gameTime > 50)
 			{
 				HermesAgent.addToLog("Meets the criteria of time>7min");
 	
