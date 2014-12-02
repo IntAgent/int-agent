@@ -51,6 +51,11 @@ public class HotelHandler extends Handler {
 					if (diff >= 0){
 						if (diff==0) { diff++; }
 						int newPrice = askPrice + diff;
+						
+						if (HermesAgent.strategy == 2) {
+							newPrice += 100;
+						}
+						
 			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
 			    		bid.addBidPoint(1, newPrice);
 					}
@@ -77,6 +82,10 @@ public class HotelHandler extends Handler {
 			if (packageSet.get(client).isInPackage(auction)) {
 				
 				int price = historicalPrices[auction-8];
+				
+				if (HermesAgent.strategy == 2) {
+					price += 100;
+				}
 				
 				//Bid for that client
 				bid.addBidPoint(1, price);

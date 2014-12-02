@@ -46,7 +46,7 @@ public class PackageSet {
 		    	if (p.getFlagFor(auction) == 0) {
 		    		
 		    		//If either not a flight or a flight asked by a nearly-ready package
-		    		if (!(auction < 8) || p.hotelsPercentage() == 1.0){
+		    		if (!(auction < 8) || (HermesAgent.strategy != 1 || p.hotelsPercentage() == 1.0)){
 		    			
 		    		p.setFlagFor(auction);
 		    		HermesAgent.addToLog("Yay! Client " + p.getClient() + " got " + agent.getAuctionTypeAsString(auction) + " (" + auction +") U=" + p.getUtility());

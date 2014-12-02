@@ -115,7 +115,7 @@ public class FlightHandler extends Handler {
 		
 		int quantity = agent.getAllocation(auction) - agent.getOwn(auction);
 		
-		if (quantity > 0){
+		if (HermesAgent.strategy == 1 && quantity > 0){
 			
 			for (int i=0 ; i < packageSet.size() ; i++){
 				//!!! Condition also is dispatch

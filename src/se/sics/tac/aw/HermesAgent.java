@@ -18,6 +18,7 @@ public class HermesAgent extends AgentImpl {
 	private PackageSet packageSet;
 	private int[] hotelsClosed = new int[8];
 	private int[] spareResources = new int[28];
+	public static int strategy = 1;
 	
 	private static final Logger log =
 			    Logger.getLogger(HermesAgent.class.getName());
