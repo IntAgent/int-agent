@@ -119,12 +119,12 @@ public class FlightHandler extends Handler {
 			
 			for (int i=0 ; i < packageSet.size() ; i++){
 				//!!! Condition also is dispatch
-				if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() < 0.5){
-					HermesAgent.addToLog("Client " + (i+1) + " still needs it but hasn't 50% of hotels");
+				if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() < 1.0){
+					HermesAgent.addToLog("Client " + (i+1) + " still needs it but hasn't 100% of hotels");
 					quantity--;
 				}
-				else if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() >= 0.5) {
-					HermesAgent.addToLog("Client " + (i+1) + " still needs it and has over 50% of hotels!");
+				else if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() >= 1.0) {
+					HermesAgent.addToLog("Client " + (i+1) + " still needs it and has over 100% of hotels!");
 				}
 			}
 		}
