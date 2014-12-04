@@ -1306,7 +1306,7 @@ public class TACAgent implements Task, TACMessageReceiver {
 	  log.fine("****** ADDING " + quantity + " TO AUCTION " + auction);
 	  if (quantity > 0) { agent.dispatch(quantity, auction); }
 	  //-----
-	  log.fine("&&& A transaction happen in auction # "+ auction + " and the price was: " + price );
+	  log.fine("Auction #"+ auction + " and the price $" + price );
 	  costs[auction] += quantity * price;
 	  try {
 	    if (tableModel != null) {
