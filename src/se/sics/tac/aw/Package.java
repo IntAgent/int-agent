@@ -7,9 +7,11 @@ import java.util.List;
 public class Package {
 
 	/** Package is a List of elements. Each element is a vector containing [auction, flag] **/
-	HashMap<Integer, Integer> currentPackage = new HashMap<Integer, Integer>();
-	int utility;
-	int client;
+	private HashMap<Integer, Integer> currentPackage = new HashMap<Integer, Integer>();
+	private int utility;
+	private int client;
+	private boolean giveUp = false;
+	private int giveUpReason;
 	
 	public Package(int client) {
 		this.client = client;
@@ -184,5 +186,18 @@ public class Package {
 			}
 		}
 		return res;
+	}
+	
+	public void setGiveUp(int auction) {
+		giveUp = true;
+		giveUpReason = auction;
+	}
+	
+	public boolean hasBeenGivenUp() {
+		return giveUp;
+	}
+	
+	public int getGiveUpReason() {
+		return giveUpReason;
 	}
 }

@@ -58,6 +58,10 @@ public class HotelHandler extends Handler {
 			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
 			    		bid.addBidPoint(1, newPrice);
 					}
+					else {
+						HermesAgent.addToLog("We give up on this package");
+						packageSet.get(client).setGiveUp(auction);
+					}
 				}
 			}
 
