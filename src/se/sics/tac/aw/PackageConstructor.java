@@ -332,17 +332,31 @@ public class PackageConstructor {
 		//If we're using average prices
 		if (useAverage) {
 			int avrFlight = 350;	// Our estimations of avr prices...
-			int avrGHotel = 70;
-			int avrBHotel = 40;
+			int avrGHotel = 120;
+			int avrBHotel = 60;
+			
+			int AGH1 = 40;
+			int AGH2 = 160;
+			int AGH3 = 150;
+			int AGH4 = 60;
+			
+			int ABH1 = 30;
+			int ABH2 = 110;
+			int ABH3 = 110;
+			int ABH4 = 30;
 			
 			//Working with average prices
 			for (int i=0; i < 8 ; i++){
-				
 				curFlight[i] = avrFlight;
-				
-				if (i<4){ curHotel[i] = avrBHotel;}
-				else { curHotel[i] = avrGHotel; }
 			}
+			curHotel[0] = ABH1;
+			curHotel[1] = ABH2;
+			curHotel[2] = ABH3;
+			curHotel[3] = ABH4;
+			curHotel[4] = AGH1;
+			curHotel[5] = AGH2;
+			curHotel[6] = AGH3;
+			curHotel[7] = AGH4;
 		}
 		
 		// If we're using the actual current prices
