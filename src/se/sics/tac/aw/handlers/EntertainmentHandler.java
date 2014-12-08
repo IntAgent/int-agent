@@ -6,40 +6,33 @@ import se.sics.tac.aw.PackageSet;
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
 
-public class EntertainmentHandler extends Handler {
+public class EntertainmentHandler extends Handler 
+{
 
-//protected int[][] maxPrice = new int[8][3];
-protected float averageBidPrice;
-
-
-///////////////////////////////////////////////////////////
+	protected static float averageBidPrice;
+	
+	
 
 	public EntertainmentHandler(TACAgent agent) 
    {
 		this.agent = agent;
 		averageBidPrice = 80f;
-		//calculateMaxPrice();
-      
-     /* //initializing the bidder matrix
-      //as a default value don't bid on any auction
-       for(int auction=16; auction<28;auction++)
-    	   for(int client=0; client<8; client++)
-    		   agent.deleteBidder(client, auction);
-*/
-	}
+   }
  
-    //this method is called at the start of the game
+    
+	//this method is called at the start of the game
    @Override
 	public void sendInitialBids(int auction, PackageSet packageSet)
    {
-		//try to buy some tickets at price zero.
         Bid bid = new Bid(auction);
+      
+        bid.addBidPoint(1, 5f);
         
-        bid.addBidPoint(1, 0f);
+        bid.addBidPoint(-1, 9000f);
         
         agent.submitBid(bid);   
         
-        HermesAgent.addToLog("@@@@@@@@@ sendBids @@@@@@@@@ at the beginning of the game - auction: " + auction);                  
+        HermesAgent.addToLog("@@@@@@@@@ sendIniialBids @@@@@@@@@ at the beginning of the game - auction: " + auction);                  
    }  
 
 	
@@ -47,31 +40,37 @@ protected float averageBidPrice;
 	@Override
 	public void quoteUpdated(Quote quote, int auction, PackageSet packageSet) 
    {
-		//what is the time now?
 		long time = agent.getGameTime();
 		
+		int extraTickets = agent.getOwn(auction) - agent.getAllocation(auction);
 		
-		//Find a dynamic strategy for buying and selling , so you consider your benfit against others
-		//before 8:00
-		if( time <= 480000l)
+		//in strategy 1 , time matters
+		if(HermesAgent.strategy == 1)
 		{
-			buyDuringGame(quote, auction, packageSet);
-			//sellDuringGame(quote, auction);
-		}
-		else//after 8:00
-		{
-			//if i have extra tickets -->sell
-			if( agent.getOwn(auction) - agent.getAllocation(auction) >0)
-			
-			sellAtTheEnd(quote, auction, packageSet);
-			else
-				//buyAtTheEnd(quote, auction, packageSet);
+			//before 8:00
+			if( time <= 480000l)
 				buyDuringGame(quote, auction, packageSet);
 			
-			//NEED TO MODIFY IT!
-			//I want this method to check all the auctions not this specific one!
-			//sellAllocatedTickets(quote, auction);			
+			else//after 8:00
+			{
+				//if i have extra tickets --> sell
+				if( extraTickets > 0)
+					sellAtTheEnd(quote, auction, packageSet, extraTickets);
+				else
+					buyDuringGame(quote, auction, packageSet);
+			}
+			
 		}
+		//strategy = 2
+		//time does not matter here
+		else
+		{
+			if(extraTickets > 0)
+				sellDuringGame(quote, auction, packageSet, extraTickets);
+			else
+				buyDuringGame(quote, auction, packageSet);	
+		}
+	
 			
    }
 
@@ -80,103 +79,161 @@ protected float averageBidPrice;
 	public void buyDuringGame(Quote quote, int auction, PackageSet packageSet)
 	{
 		//make a new buying bid with quantity = 1 and  price = time in minutes * clientPrefrence/8;
+		Bid bid = new Bid(auction);
 		
-		float buyingPrice=0f;
-		Bid buyingBid = new Bid(auction);
-		int cp; 
+		int cp=0;
+		
+		float price=0f; 
 		float percentage=0f;
 		float maxBuyingPrice =0f;
 		
+		long time = agent.getGameTime();
 		
-      //find empty slots we need to fill with tickets
+		float slope =0;
+		
+		
 		for(int client=0; client<8; client++)
 		{
 			cp = agent.getClientPreference(client, getAuctionType(auction));
+			
+			//if this client needs a ticket
 			if (packageSet.get(client).isInPackage(auction) && !packageSet.get(client).hasBeenObtained(auction))   
 			{
-				buyingPrice = (agent.getGameTime()/60000f) * (cp/9f);
-			   
-            //update the last bidding price in bidders
-			//agent.setBidder(auction, client, (int)buyingPrice);
-            
-            //dynamic
-				percentage = (200 - cp) /2;
-				maxBuyingPrice = percentage/100 * cp;
+				//dynamic
+				percentage = 1-(cp/450);
+				maxBuyingPrice = percentage * cp;
 				
-				if( quote.getAskPrice() <= maxBuyingPrice )
-					buyingBid.addBidPoint(1, buyingPrice);
+				slope = (maxBuyingPrice - 5) / (540000 - 0);
+				//price = slope*time + 0
+				price = slope * time +5;
+
+				bid.addBidPoint(1, price);
 				
 				//TESTING
-				HermesAgent.addToLog("@@@@@@@@@ buyDuringGame @@@@@@@@@ auction: " + auction + " - client: " + client + "price: " + buyingPrice + " percentage: "+percentage+ " Max buying price: "+ maxBuyingPrice );
+				HermesAgent.addToLog("@@@@@@@@@ buyDuringGame @@@@@@@@@ auction: " + auction + " - client: " + client + "price: " + price + " Max buying price: "+ maxBuyingPrice );
 			 }
+			
 		}
 		
-		if(buyingBid.getNoBidPoints()>0)
-            agent.replaceBid(agent.getBid(auction), buyingBid);
+		
+		//if there is no bidding point
+		//if(bid.getNoBidPoints()<=0)
+			bid.addBidPoint(1, 5f);
+			bid.addBidPoint(-1, 9000f);
+			
+
+		//is there a previous bid?
+		//if( quote.getBid() != null)
+			//agent.replaceBid(agent.getBid(auction), bid);
+		
+		//else
+			agent.submitBid(bid);
+		
 
 	}
-   
+   	
 
-
-	
-	
-public void sellAtTheEnd(Quote quote, int auction, PackageSet packageSet)
+	public void sellAtTheEnd(Quote quote, int auction, PackageSet packageSet, int extraTickets)
 	{
-		//at the end, we try as we could to sell any extra tickets by the bid price , 
-      //but this bid price should be less than the cost of this ticket.
+		Bid bid = new Bid(auction);
 		
-      //I have to figure out how to save all the cost info.
-        
-		//find extra tickets we have
-		int extraTickets = agent.getOwn(auction) - agent.getAllocation(auction);	
+		float price = averageBidPrice -10;
 		
-      //TESTING
-      HermesAgent.addToLog("@@@@@@@@@ sellAtTheEndGame @@@@@@@@@ auction: " + auction +" own :"+ agent.getOwn(auction)+ " Allocated: "+agent.getAllocation(auction) );
-         
-		if(extraTickets > 0)
-		{
-			Bid sellingBid = new Bid(auction);
-			
-			float bidPrice = quote.getBidPrice();
-			
-			//ticket cost is zero if this ticket is from the endowment, otherwise it is the cost for buying this ticket
-			
-         //TESTING
-            HermesAgent.addToLog("@@@@@@@@@ sellAtTheEndGame @@@@@@@@@ auction: " + auction +" - bid price: " + bidPrice + " - cost: 0 - extraTickets: " + extraTickets );
-         
-            //bid price should be higher than 100 so I will get benefit in all the situations
-			if( bidPrice-1 > 100)
-			{
-				sellingBid.addBidPoint(-1*extraTickets, bidPrice+1);
+		bid.addBidPoint(-1*extraTickets, price);
+		
+		bid.addBidPoint(1, 5f);
+		bid.addBidPoint(-1, 9000f);
 
-				agent.replaceBid(agent.getBid(auction), sellingBid);
-			}
-	
-		}
+		//is there a previous bid?
+		//if( quote.getBid() != null)
+			//agent.replaceBid(agent.getBid(auction), bid);
 		
+		//else
+			agent.submitBid(bid);
+		
+		//bid price should be higher than 100 so I will get benefit in all the situations
+	
+	//TESTING
+    HermesAgent.addToLog("@@@@@@@@@ sellAtTheEndGame @@@@@@@@@ auction: " + auction +" - price: " + price + " extraTickets: " + extraTickets );
+  
+}
+
+
+	public void sellDuringGame(Quote quote, int auction, PackageSet packageSet, int extraTickets)
+	{
+		Bid bid = new Bid(auction);
+
+		//float minPrice = averageBidPrice -10;
+		//float maxPrice = 200;
+		
+		//long minTime = 0;
+		//long maxTime = 540000;//9 min
+		
+		//long time = agent.getGameTime();
+		
+		int interval = (int) agent.getGameTime()/30000;
+		
+		//float slope =  (maxPrice - minPrice)/(maxTime - minTime);
+		
+		//price = slope * current time + maxPrice
+		//this is a linear equation better to use a curve
+		//float price = -1*slope * time + maxPrice;
+		
+		float price = (1000/(interval + 6)) + 30;
+			
+		bid.addBidPoint(-1*extraTickets, price);
+
+		
+		bid.addBidPoint(1, 5f);
+		bid.addBidPoint(-1, 9000f);
+		
+		
+		//is there a previous bid?
+				//if( quote.getBid() != null)
+					//agent.replaceBid(agent.getBid(auction), bid);
+				
+				//else
+					agent.submitBid(bid);
+				
+		//TESTING
+	    HermesAgent.addToLog("@@@@@@@@@ sellDuringGame @@@@@@@@@ auction: " + auction +" - price: " + price + " extraTickets: " + extraTickets );
+			  	  
+	  
+	    //I divided the whole game into 30 sec intervals
+	     
+	  		
+	    //this formula Alexey invented ,, 
+	    //check where is the avg price int it?
+	    
+	  		
+	    
+	    //bid price should be higher than 100 so I will get benefit in all the situations
+		//formula to calculate the selling price dynamically
+		//sellingPrice = lessThanAverage + ((200-lessThanAverage)/18) * (1- ((18-time)/18));
+	    
 	}
-
-   
-private int getAuctionType( int auction)
-   {
-   //this auction for which entertainment type?
-			   //16,17,18,19 -> type 3(AW)
-			   //20,21,22,23 -> type 4 (AP)
-			   //24,25,26,27 -> type 5 (M)
-			   int type =3;
-            
-			   if( auction >= 20 && auction<=23)
-				   type = 4;
-			   else if (auction >= 24 && auction<=27 )
-				   type = 5;
-               
-               return type;
-   
-   }
 	
+	
+	private int getAuctionType( int auction)
+	{
+		//this auction for which entertainment type?
+		//16,17,18,19 -> type 3(AW)
+		//20,21,22,23 -> type 4 (AP)
+		//24,25,26,27 -> type 5 (M)
+		
+		int type=3;
+            
+		if( auction >= 20 && auction<=23)
+			type = 4;
+		else 
+			if (auction >= 24 && auction<=27 )
+				type = 5;
 
-
-
+		return type;
+	}
+	
+	
+	
 }
   
 ///////////////////////////////////////////////////////////
