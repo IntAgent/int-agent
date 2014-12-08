@@ -134,7 +134,7 @@ public class HotelHandler extends Handler {
 		
 		whatWeHave[auction] = -1;
 		Package alternatePackage = packageConstructor.makePackage(currentPackage.getClient(), whatWeHave, true);
-		int utilityIfWeDontGetIt = alternatePackage.getUtility();
+		int utilityIfWeDontGetIt = packageConstructor.calculateCurrentUtility(alternatePackage, whatWeHave);
 		
 		HermesAgent.addToLog("U of current: " + utilityOfCurrentPackage + " vs U of alt: " + utilityIfWeDontGetIt);
 		return (utilityOfCurrentPackage - utilityIfWeDontGetIt);
@@ -164,14 +164,6 @@ public class HotelHandler extends Handler {
 		
 		double percentageCompletion = p.completionPercentage();
 	  
-	}
-	
-	public void bidCheap() {
-		for (int i=8 ; i < 16 ; i++){
-			Bid bid = new Bid(i);
-			bid.addBidPoint(16, 1);
-			agent.submitBid(bid);
-		}
 	}
 
 }
