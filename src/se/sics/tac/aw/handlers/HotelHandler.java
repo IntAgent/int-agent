@@ -62,6 +62,8 @@ public class HotelHandler extends Handler {
 				}
 			}
 
+			bid.addBidPoint(8-bid.getNoBidPoints(), 2);
+			
 			if (bid.getNoBidPoints() > 0){
 				HermesAgent.addToLog("ReplaceBid");
 				agent.replaceBid(agent.getBid(auction), bid);
@@ -91,6 +93,8 @@ public class HotelHandler extends Handler {
 				bid.addBidPoint(1, price);
 			}
 		}
+		
+		bid.addBidPoint(8-bid.getNoBidPoints(), 2);
 		
 		//If there is at least one bid to be sent
 		if (bid.getNoBidPoints() > 0){
@@ -219,6 +223,14 @@ public class HotelHandler extends Handler {
 		
 		double percentageCompletion = p.completionPercentage();
 	  
+	}
+	
+	public void bidCheap() {
+		for (int i=8 ; i < 16 ; i++){
+			Bid bid = new Bid(i);
+			bid.addBidPoint(16, 1);
+			agent.submitBid(bid);
+		}
 	}
 
 }
