@@ -336,8 +336,8 @@ public class PackageConstructor {
 			int avrBHotel = 60;
 			
 			int AGH1 = 40;
-			int AGH2 = 160;
-			int AGH3 = 150;
+			int AGH2 = 195;
+			int AGH3 = 195;
 			int AGH4 = 60;
 			
 			int ABH1 = 30;
