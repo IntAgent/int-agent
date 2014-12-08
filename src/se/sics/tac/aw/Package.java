@@ -124,6 +124,54 @@ public class Package {
 		return res;
 	}
 	
+	public int getInflight() {
+		int i = 0;
+		boolean found = false;
+		while (!found && i < 4){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		return i;
+	}
+	
+	public int getOutflight() {
+		int i = 4;
+		boolean found = false;
+		while (!found && i < 8){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		return i;
+	}
+	
+	public int getEntertainment(int nbEnt) {
+		int[][] id = {{16, 20}, {20, 24}, {24, 28}};
+		
+		int i = id[nbEnt-1][0];
+		boolean found = false;
+		while (!found && i < id[nbEnt-1][1]){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		if (!found) { i = -1; }
+		
+		return i;
+	}
+	
+	public boolean goesToGoodHotel() {
+		int i = 8;
+		boolean found = false;
+		while (!found && i < 16){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		return (i >= 12);
+	}
+	
 	public int getClient(){
 		return client;
 	}

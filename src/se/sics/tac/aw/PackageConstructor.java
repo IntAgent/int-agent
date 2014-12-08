@@ -2,6 +2,7 @@ package se.sics.tac.aw;
 
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 //Some indexation not to get lost...
@@ -31,9 +32,11 @@ public class PackageConstructor {
 	public int [] curFlight = new int[8];
 	public int [] curHotel = new int[8];
 	
+	private int[] estimatedHotelDemand;
 	
 	public PackageConstructor(TACAgent agent) {
 		this.agent = agent;
+		calculateAvgDemand();
 	}
 	
 	private void createFlagString(int[] FlagString, int[] WhatWeHave) // Copies stuff from what we have(including -1 for hotels we couldn't get) to FlagString; Counts number of restrictions
@@ -327,6 +330,149 @@ public class PackageConstructor {
 		return p;
 	}
 	
+	private void calculateAvgDemand(){
+		estimatedHotelDemand = new int[4];
+		Random r = new Random();
+		
+		for (int i=0; i < 4*56 ; i++){
+			int PopIndx = r.nextInt(10); //all choices of (arrival, departure) sets
+			int inDate=0;
+			int outDate=0;
+			
+			switch (PopIndx)
+			{
+			case 0:
+				inDate=1;
+				outDate=2;
+				break;
+			case 1:
+				inDate=1;
+				outDate=3;
+				break;
+			case 2:
+				inDate=1;
+				outDate=4;
+				break;
+			case 3:
+				inDate=1;
+				outDate=5;
+				break;
+			case 4:
+				inDate=2;
+				outDate=3;
+				break;
+			case 5:
+				inDate=2;
+				outDate=4;
+				break;
+			case 6:
+				inDate=2;
+				outDate=5;
+				break;
+			case 7:
+				inDate=3;
+				outDate=4;
+				break;
+			case 8:
+				inDate=3;
+				outDate=5;
+				break;
+			case 9:
+				inDate=4;
+				outDate=5;
+				break;
+			}
+			
+			for (int day=inDate; day < outDate ; day++){
+				estimatedHotelDemand[day-1]++;
+			}
+		}
+		
+		for (int i=0 ; i < 4 ; i++){
+			estimatedHotelDemand[i] /= 4;
+		}
+	}
+	
+	public int calculateCurrentUtility(Package currentPackage, int[] whatWeHave) {
+		
+		HermesAgent.addToLog("Utility recalculation with current prices...");
+		
+		//Display package
+		List<Integer> l = currentPackage.getElements();
+		String res = "Package of client " + (currentPackage.getClient()+1) + "\n";
+		  for (int a=0 ; a < l.size() ; a++){
+				res += agent.getAuctionTypeAsString(l.get(a)) + "\n";
+		  }
+		HermesAgent.addToLog(res);
+		
+		for (int i=0; i < 8 ; i++){
+			curFlight[i] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
+		}
+		for (int i=8; i < 16 ; i++){
+			curHotel[i-8] = (int) Math.ceil(agent.getQuote(i).getAskPrice());
+		}
+		
+		int utility;
+		
+		if (currentPackage.size() > 0){
+			int client = currentPackage.getClient();
+			int preferedInflight = agent.getClientPreference(client, agent.ARRIVAL) - 1;
+			int preferedOutflight = agent.getClientPreference(client, agent.DEPARTURE) + 2;
+			
+			int travelPenalty = 100*(Math.abs(preferedInflight - currentPackage.getInflight())
+									+ Math.abs(preferedOutflight - currentPackage.getOutflight()));
+			
+			HermesAgent.addToLog("Travel penalty: " + travelPenalty);
+			
+			int hotelBonus = 0;
+			if (currentPackage.goesToGoodHotel()) { hotelBonus = agent.getClientPreference(client, agent.HOTEL_VALUE); }
+			
+			HermesAgent.addToLog("Hotel bonus: " + hotelBonus);
+			
+			int funBonus = 0;
+			int Ent1 = currentPackage.getEntertainment(1);
+			int Ent2 = currentPackage.getEntertainment(2);
+			int Ent3 = currentPackage.getEntertainment(3);
+			if (Ent1 != -1) { funBonus += agent.getClientPreference(client, agent.E1); }
+			if (Ent2 != -1) { funBonus += agent.getClientPreference(client, agent.E2); }
+			if (Ent3 != -1) { funBonus += agent.getClientPreference(client, agent.E3); }
+			
+			HermesAgent.addToLog("Fun bonus: " + funBonus);
+			
+			utility = 1000 - travelPenalty + hotelBonus + funBonus;
+			
+			HermesAgent.addToLog("Positive utility: " + utility);
+			
+			int price = 0;
+			
+			for (int element : currentPackage.getElements()){
+				if (!(currentPackage.hasBeenObtained(element) || whatWeHave[element] > 0)){
+					if (agent.getAuctionCategory(element) == agent.CAT_FLIGHT){
+						price += curFlight[element];
+					}
+					if (agent.getAuctionCategory(element) == agent.CAT_HOTEL){
+						price += curHotel[element-8];
+					}
+					if (agent.getAuctionCategory(element) == agent.CAT_ENTERTAINMENT){
+						price += avrEntertainment;
+					}
+				}
+			}
+			
+			HermesAgent.addToLog("Price of things we don't have yet: " + price);
+			
+			utility -= price;
+			
+		}
+		else {
+			utility = -2000;
+		}
+		
+		HermesAgent.addToLog("Total utility: " + utility);
+		
+		return utility;
+	}
+	
 	public Package makePackage(int client, int[] w, boolean useAverage) // That is our global mega-super-thing... 
 	{	
 		//If we're using average prices
@@ -344,6 +490,21 @@ public class PackageConstructor {
 			int ABH2 = 110;
 			int ABH3 = 110;
 			int ABH4 = 30;
+			
+			//Add weights representing the risk to these prices
+			int totalDemand = 0;
+			for (int i=0; i < estimatedHotelDemand.length ; i++){ totalDemand += estimatedHotelDemand[i]; }
+			
+			AGH1 = (int) Math.ceil(AGH1*(estimatedHotelDemand[0]*1.0/totalDemand));
+			AGH2 = (int) Math.ceil(AGH2*(estimatedHotelDemand[1]*1.0/totalDemand));
+			AGH3 = (int) Math.ceil(AGH3*(estimatedHotelDemand[2]*1.0/totalDemand));
+			AGH4 = (int) Math.ceil(AGH4*(estimatedHotelDemand[3]*1.0/totalDemand));
+			
+			ABH1 = (int) Math.ceil(ABH1*(estimatedHotelDemand[0]*1.0/totalDemand));
+			ABH2 = (int) Math.ceil(ABH2*(estimatedHotelDemand[1]*1.0/totalDemand));
+			ABH3 = (int) Math.ceil(ABH3*(estimatedHotelDemand[2]*1.0/totalDemand));
+			ABH4 = (int) Math.ceil(ABH4*(estimatedHotelDemand[3]*1.0/totalDemand));
+			
 			
 			//Working with average prices
 			for (int i=0; i < 8 ; i++){
