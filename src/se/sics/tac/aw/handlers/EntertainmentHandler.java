@@ -40,12 +40,34 @@ public class EntertainmentHandler extends Handler
 	@Override
 	public void quoteUpdated(Quote quote, int auction, PackageSet packageSet) 
    {
-		long time = agent.getGameTime();
+		//long time = agent.getGameTime();
 		
 		int extraTickets = agent.getOwn(auction) - agent.getAllocation(auction);
 		
 		//in strategy 1 , time matters
 		if(HermesAgent.strategy == 1)
+		{
+			if(extraTickets > 0)
+				sellDuringGame1(quote, auction, packageSet, extraTickets);
+			else
+				buyDuringGame(quote, auction, packageSet);
+			
+			
+		}
+		//strategy = 2
+		//time does not matter here
+		else
+		{
+			if(extraTickets > 0)
+				sellDuringGame(quote, auction, packageSet, extraTickets);
+			else
+				buyDuringGame(quote, auction, packageSet);	
+		}
+	
+			
+   }
+/*
+ if(HermesAgent.strategy == 1)
 		{
 			//before 8:00
 			if( time <= 480000l)
@@ -61,19 +83,8 @@ public class EntertainmentHandler extends Handler
 			}
 			
 		}
-		//strategy = 2
-		//time does not matter here
-		else
-		{
-			if(extraTickets > 0)
-				sellDuringGame(quote, auction, packageSet, extraTickets);
-			else
-				buyDuringGame(quote, auction, packageSet);	
-		}
-	
-			
-   }
-
+  */
+ 
 	
 	//buy at a low price and increment it by time until client preference
 	public void buyDuringGame(Quote quote, int auction, PackageSet packageSet)
@@ -212,7 +223,30 @@ public class EntertainmentHandler extends Handler
 		//sellingPrice = lessThanAverage + ((200-lessThanAverage)/18) * (1- ((18-time)/18));
 	    
 	}
+
 	
+	public void sellDuringGame1(Quote quote, int auction, PackageSet packageSet, int extraTickets)
+	{
+		Bid bid = new Bid(auction);
+		
+		int interval = (int) agent.getGameTime()/30000;
+		
+		//y=65*cos(x/6)+135
+		//float price = 65*(float)(Math.cos(interval/6))+135;
+
+		float price = 135/(1+(float)Math.exp(interval/2.5-4))+65;
+	
+		bid.addBidPoint(-1*extraTickets, price);
+		
+		bid.addBidPoint(1, 5f);
+		bid.addBidPoint(-1, 9000f);
+
+		agent.submitBid(bid);
+				
+		//TESTING
+	    HermesAgent.addToLog("@@@@@@@@@ sellDuringGame1 @@@@@@@@@ auction: " + auction +" - price: " + price + " extraTickets: " + extraTickets );
+		 
+	}
 	
 	private int getAuctionType( int auction)
 	{
