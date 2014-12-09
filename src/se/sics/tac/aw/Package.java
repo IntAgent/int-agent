@@ -7,9 +7,11 @@ import java.util.List;
 public class Package {
 
 	/** Package is a List of elements. Each element is a vector containing [auction, flag] **/
-	HashMap<Integer, Integer> currentPackage = new HashMap<Integer, Integer>();
-	int utility;
-	int client;
+	private HashMap<Integer, Integer> currentPackage = new HashMap<Integer, Integer>();
+	private int utility;
+	private int client;
+	private boolean giveUp = false;
+	private int giveUpReason;
 	
 	public Package(int client) {
 		this.client = client;
@@ -124,6 +126,54 @@ public class Package {
 		return res;
 	}
 	
+	public int getInflight() {
+		int i = 0;
+		boolean found = false;
+		while (!found && i < 4){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		return i;
+	}
+	
+	public int getOutflight() {
+		int i = 4;
+		boolean found = false;
+		while (!found && i < 8){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		return i;
+	}
+	
+	public int getEntertainment(int nbEnt) {
+		int[][] id = {{16, 20}, {20, 24}, {24, 28}};
+		
+		int i = id[nbEnt-1][0];
+		boolean found = false;
+		while (!found && i < id[nbEnt-1][1]){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		if (!found) { i = -1; }
+		
+		return i;
+	}
+	
+	public boolean goesToGoodHotel() {
+		int i = 8;
+		boolean found = false;
+		while (!found && i < 16){
+			if (isInPackage(i)) { found = true; }
+			else { i++; }
+		}
+		
+		return (i >= 12);
+	}
+	
 	public int getClient(){
 		return client;
 	}
@@ -136,5 +186,18 @@ public class Package {
 			}
 		}
 		return res;
+	}
+	
+	public void setGiveUp(int auction) {
+		giveUp = true;
+		giveUpReason = auction;
+	}
+	
+	public boolean hasBeenGivenUp() {
+		return giveUp;
+	}
+	
+	public int getGiveUpReason() {
+		return giveUpReason;
 	}
 }

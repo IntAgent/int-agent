@@ -13,7 +13,7 @@ import se.sics.tac.aw.TACAgent;
 public class HotelHandler extends Handler {
 
 	private Random r;
-	private int[] estimatedOthersDemand;
+	
 	private int[] estimatedCurrentDemand;
 	
 	private int[] historicalPrices = {10, 130, 110, 50, 100, 190, 150, 110};
@@ -21,7 +21,6 @@ public class HotelHandler extends Handler {
 	public HotelHandler(TACAgent agent) {
 		this.agent = agent;
 		r = new Random();
-		estimatedOthersDemand = new int[4];
 		estimatedCurrentDemand = new int[4];
 	}
 	
@@ -44,7 +43,7 @@ public class HotelHandler extends Handler {
 			    	
 					int askPrice = (int) Math.ceil(quote.getAskPrice());
 				
-					int diff = utilityDifferenceWithAlternative(auction, client);
+					int diff = utilityDifferenceWithAlternative(auction, packageSet.get(client));
 					HermesAgent.addToLog("Difference of U is thus " + diff);
 					
 					//If it's in our interest to go on bidding
@@ -58,6 +57,10 @@ public class HotelHandler extends Handler {
 						
 			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
 			    		bid.addBidPoint(1, newPrice);
+					}
+					else {
+						HermesAgent.addToLog("We give up on this package");
+						packageSet.get(client).setGiveUp(auction);
 					}
 				}
 			}
@@ -103,6 +106,7 @@ public class HotelHandler extends Handler {
 		
 	}
 	
+	/*
 	public void addOwnDemand(PackageSet packageSet){
 	    //"Cheap Hotel 1", "Cheap Hotel 2", "Cheap Hotel 3", "Cheap Hotel 4",
 	    //"Good Hotel 1", "Good Hotel 2", "Good Hotel 3", "Good Hotel 4",
@@ -119,81 +123,18 @@ public class HotelHandler extends Handler {
 				}
 			}
 	    }
-	}
+	}*/
 	
-	private void calculateAvgDemand(){
-		estimatedOthersDemand = new int[4];
-		
-		for (int i=0; i < 4*56 ; i++){
-			int PopIndx = r.nextInt(10); //all choices of (arrival, departure) sets
-			int inDate=0;
-			int outDate=0;
-			
-			switch (PopIndx)
-			{
-			case 0:
-				inDate=1;
-				outDate=2;
-				break;
-			case 1:
-				inDate=1;
-				outDate=3;
-				break;
-			case 2:
-				inDate=1;
-				outDate=4;
-				break;
-			case 3:
-				inDate=1;
-				outDate=5;
-				break;
-			case 4:
-				inDate=2;
-				outDate=3;
-				break;
-			case 5:
-				inDate=2;
-				outDate=4;
-				break;
-			case 6:
-				inDate=2;
-				outDate=5;
-				break;
-			case 7:
-				inDate=3;
-				outDate=4;
-				break;
-			case 8:
-				inDate=3;
-				outDate=5;
-				break;
-			case 9:
-				inDate=4;
-				outDate=5;
-				break;
-			}
-			
-			for (int day=inDate; day < outDate ; day++){
-				estimatedOthersDemand[day-1]++;
-			}
-		}
-		
-		for (int i=0 ; i < 4 ; i++){
-			estimatedOthersDemand[i] /= 4;
-		}
-	}
-	
-	private int utilityDifferenceWithAlternative(int auction, int client) {
+	private int utilityDifferenceWithAlternative(int auction, Package currentPackage) {
 		
 		PackageConstructor packageConstructor = new PackageConstructor(agent);
-		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(client);
+		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(currentPackage.getClient());
 		
-		Package currentPackage = packageConstructor.makePackage(client, whatWeHave, true);
-		int utilityOfCurrentPackage = currentPackage.getUtility();
+		int utilityOfCurrentPackage = packageConstructor.calculateCurrentUtility(currentPackage, whatWeHave);
 		
 		whatWeHave[auction] = -1;
-		Package alternatePackage = packageConstructor.makePackage(client, whatWeHave, true);
-		int utilityIfWeDontGetIt = alternatePackage.getUtility();
+		Package alternatePackage = packageConstructor.makePackage(currentPackage.getClient(), whatWeHave, true);
+		int utilityIfWeDontGetIt = packageConstructor.calculateCurrentUtility(alternatePackage, whatWeHave);
 		
 		HermesAgent.addToLog("U of current: " + utilityOfCurrentPackage + " vs U of alt: " + utilityIfWeDontGetIt);
 		return (utilityOfCurrentPackage - utilityIfWeDontGetIt);
@@ -223,14 +164,6 @@ public class HotelHandler extends Handler {
 		
 		double percentageCompletion = p.completionPercentage();
 	  
-	}
-	
-	public void bidCheap() {
-		for (int i=8 ; i < 16 ; i++){
-			Bid bid = new Bid(i);
-			bid.addBidPoint(16, 1);
-			agent.submitBid(bid);
-		}
 	}
 
 }

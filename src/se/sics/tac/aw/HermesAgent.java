@@ -104,9 +104,11 @@ public class HermesAgent extends AgentImpl {
 		  log.fine(res);
 	  }
 	  
-	  private void calculateSeparateAllocation(int i, boolean average){
+	  private void calculateSeparateAllocation(int i, boolean average, int exception){
 			//Construct vector of what we have
 			int[] whatWeHave = makeWhatWeHaveVector(i);
+			
+			if (exception != -1){ whatWeHave[exception] = -1; }
 			
 			log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
 			
@@ -143,7 +145,7 @@ public class HermesAgent extends AgentImpl {
 		  
 		// For each of the eight clients
 		for (int i = 0 ; i < 8 ; i++) {
-			calculateSeparateAllocation(i, true);
+			calculateSeparateAllocation(i, true, -1);
 		}
 		
 		// hotelHandler.addOwnDemand(packageSet); //TODO gerer updates
@@ -317,40 +319,53 @@ public class HermesAgent extends AgentImpl {
 			for (int c=0 ; c < 8 ; c++){
 				
 				//if this client needed it and didn't get it
+				boolean changed = false;
 				if (packageSet.get(c).isInPackage(auction)){
 					if (!packageSet.get(c).hasBeenObtained(auction)){
 						
 						log.fine("Oh no! Client " + (c+1) + "wanted one :(");
 						
-						log.fine("------OLD PACKAGE------");
-						displayPackage(c);
+						recalculatePackage(c, -1);
 						
-						displayAllocations();
-						
-						List<Integer> elements = packageSet.get(c).getElements();
-						for (int i=0 ; i < elements.size() ; i++){
-							//Take the elements off the Allocations
-							
-				    		HermesAgent.addToLog("Allocation: Deleting auction " + elements.get(i) + " from client " + (c+1));
-							agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
-							
-							//Add elements obtained from currentPackage to SpareResources
-							if (packageSet.get(c).hasBeenObtained(elements.get(i))){
-								spareResources[elements.get(i)]++;
-							}
-						}
-						
-						//Calculate new package and allocations
-						calculateSeparateAllocation(c, false);
-						
-						log.fine("------NEW PACKAGE------");
-						displayPackage(c);
-						
+						changed = true;
 					}
+				}
+				
+				if (!changed && packageSet.get(c).hasBeenGivenUp()){
+					
+					log.fine("Oh no! Package of client " + (c+1) + "was given up :(");
+					
+					recalculatePackage(c, packageSet.get(c).getGiveUpReason());
 				}
 			}
 		  }
-		
+	
+	  public void recalculatePackage(int c, int exception){
+			log.fine("------OLD PACKAGE------");
+			displayPackage(c);
+			
+			//displayAllocations();
+			
+			List<Integer> elements = packageSet.get(c).getElements();
+			for (int i=0 ; i < elements.size() ; i++){
+				//Take the elements off the Allocations
+				
+	    		HermesAgent.addToLog("Allocation: Deleting auction " + elements.get(i) + " from client " + (c+1));
+				agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
+				
+				//Add elements obtained from currentPackage to SpareResources
+				if (packageSet.get(c).hasBeenObtained(elements.get(i))){
+					spareResources[elements.get(i)]++;
+				}
+			}
+			
+			//Calculate new package and allocations
+			calculateSeparateAllocation(c, false, exception);
+			
+			log.fine("------NEW PACKAGE------");
+			displayPackage(c);
+	  }
+	  
 	  public void quoteUpdated(int auctionCategory) {
 		    log.fine("All quotes for "
 			     + agent.auctionCategoryToString(auctionCategory)
