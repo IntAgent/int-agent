@@ -14,19 +14,16 @@ public class HotelHandler extends Handler {
 
 	private Random r;
 	
-	private int[] estimatedCurrentDemand;
-	
 	private int[] historicalPrices = {10, 130, 110, 50, 100, 190, 150, 110};
 	
 	public HotelHandler(TACAgent agent) {
 		this.agent = agent;
 		r = new Random();
-		estimatedCurrentDemand = new int[4];
 	}
 	
 	@Override
 	public void quoteUpdated(Quote quote, int auction, PackageSet packageSet) {
-		HermesAgent.addToLog("HOTELHANDLER.QUOTEUPATED()");
+		
 		HermesAgent.addToLog("Quote of auction " + auction + " is now " + quote.getAskPrice());
 		
 		Bid bid = new Bid(auction);
@@ -43,6 +40,7 @@ public class HotelHandler extends Handler {
 			    	
 					int askPrice = (int) Math.ceil(quote.getAskPrice());
 				
+					//Compare the utility of our current package with that of an alternate package
 					int diff = utilityDifferenceWithAlternative(auction, packageSet.get(client));
 					HermesAgent.addToLog("Difference of U is thus " + diff);
 					
@@ -55,7 +53,7 @@ public class HotelHandler extends Handler {
 							newPrice += 500;
 						}
 						
-			    		HermesAgent.addToLog("<= askPrice -> New price : " + newPrice);
+			    		HermesAgent.addToLog("We go on bidding -> New price : " + newPrice);
 			    		bid.addBidPoint(1, newPrice);
 					}
 					else {
@@ -65,10 +63,10 @@ public class HotelHandler extends Handler {
 				}
 			}
 
+			// We place a bunch of bids in case we can grab cheap extra hotel rooms 
 			bid.addBidPoint(8-bid.getNoBidPoints(), 2);
 			
 			if (bid.getNoBidPoints() > 0){
-				HermesAgent.addToLog("ReplaceBid");
 				agent.replaceBid(agent.getBid(auction), bid);
 			}
 	      }
@@ -79,7 +77,6 @@ public class HotelHandler extends Handler {
 	 * Initial bid, based on the historical prices
 	 */
 	public void sendInitialBids(int auction, PackageSet packageSet) {
-		HermesAgent.addToLog("HOTELHANDLER.SENDSEPARATEBIDS()");
 		Bid bid = new Bid(auction);
 		
 		for (int client=0; client < 8 ; client++){
@@ -125,43 +122,62 @@ public class HotelHandler extends Handler {
 	    }
 	}*/
 	
+	/**
+	 * Calculates the difference in current utility (score we could obtain by completing this package,
+	 * considering the current auction prices for the tickets we still need to get) between the current
+	 * version of this client's package, and an alternate package if we decided not to bid more on the
+	 * current auction
+	 */
 	private int utilityDifferenceWithAlternative(int auction, Package currentPackage) {
 		
 		PackageConstructor packageConstructor = new PackageConstructor(agent);
+		
+		//Retrieves all resources (spare resources and acquired tickets from the current package)
 		int[] whatWeHave = agent.getAgent().makeWhatWeHaveVector(currentPackage.getClient());
 		
+		//Calculates the current utility of the current package
 		int utilityOfCurrentPackage = packageConstructor.calculateCurrentUtility(currentPackage, whatWeHave);
 		
+		//Calculates the current utility of the alternate package, created by putting an exception on the current auction
 		whatWeHave[auction] = -1;
 		Package alternatePackage = packageConstructor.makePackage(currentPackage.getClient(), whatWeHave, true);
 		int utilityIfWeDontGetIt = packageConstructor.calculateCurrentUtility(alternatePackage, whatWeHave);
 		
 		HermesAgent.addToLog("U of current: " + utilityOfCurrentPackage + " vs U of alt: " + utilityIfWeDontGetIt);
+		
 		return (utilityOfCurrentPackage - utilityIfWeDontGetIt);
 	}
 	
+	
+	/**
+	 * Calculation of the risk involved for this package when it comes to the hotels
+	 */
 	private void howBadDoWeWantIt(int auction, Package p) {
+		
+		//Get the ID of the auction of the other hotel, whether we start with Cheap hotel or Good one
 		int otherHotelForThatDay = 0;
 		if (auction >= 12) { otherHotelForThatDay = auction-4; }
 		else { otherHotelForThatDay = auction+4; }
 		
+		//Is the auction for the other hotel still open?
 		boolean otherHotelOpen = (!agent.getQuote(otherHotelForThatDay).isAuctionClosed());
 		
 		//---------
 		
+		//Counts the number of closed auctions to determine how much flexibility is left
 		int nbOfClosedAuctions = 0;
 		for (int i=0 ; i < 8 ; i++){
 			if (agent.getQuote(8+i).isAuctionClosed()) { nbOfClosedAuctions++; }
 		}
 		
 		//---------
-
-		//---------
 		
+		//Number of days the package would make the client stay (the longer the more risky)
 		int nbOfDays = p.getNbOfDays();
 		
 		//---------
 		
+		//Percentage of completion of the package in term of feasibility (entertainment not included)
 		double percentageCompletion = p.completionPercentage();
 	  
 	}

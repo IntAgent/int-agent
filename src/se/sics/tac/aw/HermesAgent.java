@@ -41,14 +41,26 @@ public class HermesAgent extends AgentImpl {
 			packageSet = new PackageSet(agent);
 	  }
 	  
+	  /**
+	   * Fills the spareResources vector with the initial Entertainment tickets
+	   * distributed at the beginning of the game
+	   */
 	  private void fillInitialSpareResources(){
-		  //Fill the spareResources with initial Entertainement tickets
 		  for (int i=16; i <= 27 ; i++){
 			  spareResources[i] = agent.getOwn(i);
 		  }
-		  log.fine("SpareResources: " + Arrays.toString(spareResources));
+		  log.info("SpareResources: " + Arrays.toString(spareResources));
 	  }
 	  
+	  /**
+	   * Select a best package out of 10 created by the PackageConstructor
+	   * (Multiple calculations considering the genetic algorithm of PackageConstructor can cause variations)
+	   * 
+	   * @param client The client we want to create a package for
+	   * @param whatWeHave The summary of all the resources available (spare, previous package) or not (closed hotels)
+	   * @param average Whether the average prices are used in the calculation of the package (if false: current prices)
+	   * @return The created package
+	   */
 	  private Package createBestPackage(int client, int[] whatWeHave, boolean average) {
 		  
 		  Package bestPackage = packageConstructor.makePackage(client, whatWeHave, average);
@@ -67,6 +79,13 @@ public class HermesAgent extends AgentImpl {
 		  return bestPackage;
 	  }
 	  
+	  /**
+	   * Creates a vector that summarizes all resources available to a client, including:
+	   * - The spare resources that currently figure in no package
+	   * - The resources that were obtained in the previous package of the client
+	   * - The closed hotel auctions that must not be considered as possibilities anymore
+	   * (if there is none in our previously acquired resources) 
+	   */
 	  public int[] makeWhatWeHaveVector(int client) {
 			
 			int[] whatWeHave = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -94,6 +113,10 @@ public class HermesAgent extends AgentImpl {
 			return whatWeHave;
 	  }
 	  
+	  /**
+	   * Displays a package's content into the log
+	   * @param i Number of the client whose package must be shown
+	   */
 	  private void displayPackage(int i){
 		  List<Integer> l = packageSet.get(i).getElements();
 		  String res = "Package of client " + (i+1) + "\n";
@@ -101,16 +124,24 @@ public class HermesAgent extends AgentImpl {
 				res += agent.getAuctionTypeAsString(l.get(a)) + "\n";
 		  }
 		  res += "-------\n";
-		  log.fine(res);
+		  log.info(res);
 	  }
 	  
+	  /**
+	   * Calculates the allocation of a given client.
+	   * 
+	   * @param i Number of the client whose allocation is calculated
+	   * @param average Whether the average prices are used in the calculation of the package (if false: current prices)
+	   * @param exception Auction ID of an auction that must not be considered as available
+	   * for this calculation (used for alternative packages calculation ; if no exception : -1)
+	   */
 	  private void calculateSeparateAllocation(int i, boolean average, int exception){
 			//Construct vector of what we have
 			int[] whatWeHave = makeWhatWeHaveVector(i);
 			
 			if (exception != -1){ whatWeHave[exception] = -1; }
 			
-			log.fine("WhatWeHave: " + Arrays.toString(whatWeHave));
+			log.info("WhatWeHave: " + Arrays.toString(whatWeHave));
 			
 			// Create a package
 			packageSet.set(i, createBestPackage(i, whatWeHave, average));
@@ -118,6 +149,7 @@ public class HermesAgent extends AgentImpl {
 			//Display the new package in the log
 			displayPackage(i);
 			
+			// Get the list of all auctions the package is interested in
 			List<Integer> l = packageSet.get(i).getElements();
 			
 			// Add every element of the package to the list of things we need to get
@@ -127,30 +159,34 @@ public class HermesAgent extends AgentImpl {
 				log.info("Allocation: auction " + auction + " is added to the sum");
 			}
 			
-			//Take off the spareResources anything that was added to the package
+			//Take off the spareResources anything that can be added to the package
 			for (int a=0 ; a < l.size() ; a++){
 				int auction = l.get(a);
 				if (spareResources[auction] > 0) {
-					log.info("We had a spare (auction "+ auction + ": added to the package.");
+					log.info("We had a spare: auction " + auction + " is added to the package.");
 					packageSet.get(i).setFlagFor(auction);	
 					spareResources[auction]--;
 				}
 			}
-			//log.fine("SpareResources: " + Arrays.toString(spareResources));
 
 			displayAllocations();
 	  }
 	  
+	  /**
+	   * Calculate the allocations for all 8 client
+	   */
 	  public void calculateAllocation() {
 		  
 		// For each of the eight clients
 		for (int i = 0 ; i < 8 ; i++) {
 			calculateSeparateAllocation(i, true, -1);
 		}
-		
-		// hotelHandler.addOwnDemand(packageSet); //TODO gerer updates
+
 	  }
 
+	  /**
+	   * Calls the respective handler of the auction whose quote was updated
+	   */
 	  public void quoteUpdated(Quote quote) {
 	    int auction = quote.getAuction();
 	    int auctionCategory = agent.getAuctionCategory(auction);
@@ -171,7 +207,10 @@ public class HermesAgent extends AgentImpl {
 		}
 	  }
 
-	  public void displayAllocations() {
+	  /**
+	   * Displays the allocations into the log
+	   */
+	  private void displayAllocations() {
 			String allocations = "ALLOCATIONS VECTOR:\n";
 			for (int i=0 ; i < 28 ; i++){
 				allocations += "Auction " + i + ":" + agent.getAllocation(i) + "\n";
@@ -184,6 +223,7 @@ public class HermesAgent extends AgentImpl {
 		
 		displayAllocations();
 		
+		//Displays the preferences of all clients
 		String res = "\n";
 		for (int i=0 ; i < 8 ; i++){
 			res += "Preferences: Client " + (i+1) + ":\n";
@@ -193,10 +233,9 @@ public class HermesAgent extends AgentImpl {
 			res += "Entertainment 1: " + agent.getClientPreference(i, agent.E1) + "\n";
 			res += "Entertainment 2: " + agent.getClientPreference(i, agent.E2) + "\n";
 			res += "Entertainment 3: " + agent.getClientPreference(i, agent.E3) + "\n";
-			res += "---------------" + "\n";
 		}
 		
-		log.fine(res);
+		log.info(res);
 		
 		fillInitialSpareResources();
 	    calculateAllocation();
@@ -204,6 +243,10 @@ public class HermesAgent extends AgentImpl {
 	    sendInitialBids();
 	  }
 
+	  /**
+	   * Sends the first bids at the beginning of the game
+	   * (No initial bid sent for flights)
+	   */
 	  private void sendInitialBids() {
 	    for (int i = 0, n = agent.getAuctionNo(); i < n; i++) {
 		  
@@ -247,8 +290,12 @@ public class HermesAgent extends AgentImpl {
 		    log.fine("       Hash: " + bid.getBidHash());
 		    
 	  }
-	  
-	 public void dispatchDefaultEntertainment() {
+	 
+	 /**
+	  * Distribute the initial Entertainment tickets distributed at the beginning of the game
+	  * to the freshly created packages that might need them
+	  */
+	 private void dispatchDefaultEntertainment() {
 		int[] type = {agent.TYPE_ALLIGATOR_WRESTLING, agent.TYPE_AMUSEMENT, agent.TYPE_MUSEUM};
 		int[] day = {1, 2, 3, 4};
 		int nbOwned;
@@ -265,8 +312,11 @@ public class HermesAgent extends AgentImpl {
 		
 	 }
 	 
+	 /**
+	  * Dispatches the quantity of tickets obtained for an auction between packages
+	  */
 	 public void dispatch(int nbToDispatch, int auction) {
-		log.fine("**** Dispatching " + nbToDispatch + " tickets of auction " + auction);
+		log.info("**** Dispatching " + nbToDispatch + " tickets of auction " + auction);
 	    
 		this.packageSet.distribute(nbToDispatch, auction);
 
@@ -300,8 +350,9 @@ public class HermesAgent extends AgentImpl {
 			    res += "-------\n";
 		    }
 		    
-		    log.fine(res);
+		    log.info(res);
 		    
+		    //Reinitialize all vectors and parameters for the next game
 			initForNewGame();
 
 	  }
@@ -309,47 +360,47 @@ public class HermesAgent extends AgentImpl {
 	  public void auctionClosed(int auction) {
 		    log.fine("*** Auction " + auction + " closed!");
 		    
-		    //Hotel auctions range from 8 to 15
+		    //If hotel auction, marks it as closed
 		    if (auction >= 8 && auction <= 15) {
 		    	hotelsClosed[auction-8] = 1;
 		    }
-		    			
-			//log.fine("WhatWeHave of client 1: " + Arrays.toString(makeWhatWeHaveVector(0)));
 		
 			for (int c=0 ; c < 8 ; c++){
 				
-				//if this client needed it and didn't get it
+				//If this client needed it and didn't get it
 				boolean changed = false;
 				if (packageSet.get(c).isInPackage(auction)){
 					if (!packageSet.get(c).hasBeenObtained(auction)){
 						
-						log.fine("Oh no! Client " + (c+1) + "wanted one :(");
+						log.info("Oh no! Client " + (c+1) + "wanted one :(");
 						
+						//We recalculate another package for him
 						recalculatePackage(c, -1);
 						
 						changed = true;
 					}
 				}
 				
+				//If the package was given up because one of its auction's ask price went too far
 				if (!changed && packageSet.get(c).hasBeenGivenUp()){
 					
-					log.fine("Oh no! Package of client " + (c+1) + "was given up :(");
+					log.info("Oh no! Package of client " + (c+1) + "was given up :(");
 					
+					//We recalculate another package for him AND put an exception on the auction in question
 					recalculatePackage(c, packageSet.get(c).getGiveUpReason());
 				}
 			}
 		  }
 	
 	  public void recalculatePackage(int c, int exception){
-			log.fine("------OLD PACKAGE------");
+			log.info("------OLD PACKAGE------");
 			displayPackage(c);
 			
-			//displayAllocations();
-			
 			List<Integer> elements = packageSet.get(c).getElements();
+			
 			for (int i=0 ; i < elements.size() ; i++){
-				//Take the elements off the Allocations
 				
+				//Take the elements off the Allocations
 	    		HermesAgent.addToLog("Allocation: Deleting auction " + elements.get(i) + " from client " + (c+1));
 				agent.setAllocation(elements.get(i), agent.getAllocation(elements.get(i)) - 1);
 				
@@ -362,7 +413,7 @@ public class HermesAgent extends AgentImpl {
 			//Calculate new package and allocations
 			calculateSeparateAllocation(c, false, exception);
 			
-			log.fine("------NEW PACKAGE------");
+			log.info("------NEW PACKAGE------");
 			displayPackage(c);
 	  }
 	  
@@ -373,7 +424,7 @@ public class HermesAgent extends AgentImpl {
 		  }
 	  
 	  public static void addToLog(String msg) {
-		  log.fine(msg);
+		  log.info(msg);
 	  }
 	 
 }

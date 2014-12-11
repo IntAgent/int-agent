@@ -35,7 +35,7 @@ public class FlightHandler extends Handler {
 		HermesAgent.addToLog("TryInitialisation");
 	}	
 
-	//       *******************Trend prediction (CAUTION!! A lot of mess detected!! Brace yourself b4 proceeding!!)*********************************
+	//       *******************Trend prediction*********************************
 
 	private double[] Solver(double [][]values, double w, double c)
 	{
@@ -51,7 +51,6 @@ public class FlightHandler extends Handler {
 	}
 
 	private double TrendCalc(int auction) {			// Calculates and returns inclination
-		//int[][] PriceMat = new int[8][55];				//should be our auctionHistory from above. 
 		int s=0;										//counter of how many idexies are already filled
 		double[][] values = new double[2][3];			//Equation solver values
 		double[] EMat = new double[2];				//matrix of linear parameters for all auctions
@@ -94,10 +93,7 @@ public class FlightHandler extends Handler {
 		}
 		//values[1][2]*=s;
 
-		EMat=Solver(values, w, c);								//Not sure how to convert that one
-		//EMat[client][0]=w;
-		//EMat[client][1]=c;
-		//trend[auction];
+		EMat=Solver(values, w, c);
 		return EMat[0];
 	}
 
@@ -124,7 +120,7 @@ public class FlightHandler extends Handler {
 					quantity--;
 				}
 				else if (packageSet.get(i).isInPackage(auction) && !packageSet.get(i).hasBeenObtained(auction) && packageSet.get(i).hotelsPercentage() >= 1.0) {
-					HermesAgent.addToLog("Client " + (i+1) + " still needs it and has over 100% of hotels!");
+					HermesAgent.addToLog("Client " + (i+1) + " still needs it and has 100% of hotels!");
 				}
 			}
 		}

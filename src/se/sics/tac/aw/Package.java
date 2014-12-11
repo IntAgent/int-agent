@@ -6,10 +6,26 @@ import java.util.List;
 
 public class Package {
 
-	/** Package is a List of elements. Each element is a vector containing [auction, flag] **/
+	/** A Package is a HashMap where the key is the auction ID and the value is 0 or 1,
+	 * indicating whether the ticket for this particular auction has been obtained yet.
+	 * If a key figures in the HashMap, it means a ticket for this auction is needed by the package.
+	 * If the value associated to the key is set to 1, it means the ticket has been obtained. **/
 	private HashMap<Integer, Integer> currentPackage = new HashMap<Integer, Integer>();
+	
+	/**
+	 * Utility of the package
+	 */
 	private int utility;
+	
+	/**
+	 * Client associated to the package
+	 */
 	private int client;
+	
+	/**
+	 * Indicates whether a package has been given up on because an auction's ask price rose too high
+	 * If it did, we also keep the ID of the auction concerned in giveUpReason.
+	 */
 	private boolean giveUp = false;
 	private int giveUpReason;
 	
@@ -18,7 +34,7 @@ public class Package {
 	}
 	
 	/**
-	 * Add an element to the package
+	 * Add an auction needed to the package
 	 */
 	public void addElement(int auction) {
 		currentPackage.put(auction, 0);
@@ -45,10 +61,16 @@ public class Package {
 	}
 	
 
+	/**
+	 * Is the auction needed in this package?
+	 */
 	public boolean isInPackage(int auction) {
 		return currentPackage.containsKey(auction);
 	}
 	
+	/**
+	 * Has the ticket for this auction been obtained?
+	 */
 	public boolean hasBeenObtained(int auction){
 		boolean res = false;
 		if (isInPackage(auction)){
@@ -74,6 +96,9 @@ public class Package {
 		return res;
 	}
 	
+	/**
+	 * Percentage of completion of a feasible package (Entertainment not included)
+	 */
 	public double completionPercentage() {
 		int obtainedEssential = 0;
 		int totEssential = 0;
@@ -89,6 +114,9 @@ public class Package {
 		return obtainedEssential*1.0/totEssential;
 	}
 	
+	/**
+	 * Percentage of hotels needed by this package that were obtained
+	 */
 	public double hotelsPercentage() {
 		int obtainedEssential = 0;
 		int totEssential = 0;
@@ -104,6 +132,9 @@ public class Package {
 		return obtainedEssential*1.0/totEssential;
 	}
 	
+	/**
+	 * Were all the hotels needed in this package already obtained?
+	 */
 	public boolean hasAllHotels() {
 		boolean allHotels = true;
 		
@@ -118,6 +149,9 @@ public class Package {
 		return allHotels;
 	}
 	
+	/**
+	 * Get a list of all the auctions needed by the package
+	 */
 	public List<Integer> getElements() {
 		List<Integer> res = new ArrayList<Integer>();
 		
@@ -178,6 +212,9 @@ public class Package {
 		return client;
 	}
 	
+	/**
+	 * Get the number of days this package would make the client stay
+	 */
 	public int getNbOfDays(){
 		int res = 0;
 		for (int auction=8 ; auction < 16 ; auction++){

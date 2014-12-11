@@ -1,7 +1,5 @@
 package se.sics.tac.aw;
 
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -87,11 +85,9 @@ public class PackageConstructor {
 		if (cG == outDate-inDate || cB == outDate-inDate)
 		{
 			return true;
-			//cout << "True" << endl;
 		}
 		else
 		{
-			//cout << "False" << endl;
 			return false;
 		}
 	}
@@ -109,7 +105,7 @@ public class PackageConstructor {
 		
 		////////////////////////////////////////////////////DETERMINING POP FEATURES/////////////////////////////////////////////////
 
-		switch (PopIndx) 					// Get in/out flight dates into corresponding var's... Looks bad, i know...
+		switch (PopIndx) 					// Get in/out flight dates into corresponding var's....
 		{
 		case 0:
 			inDate=1;
@@ -220,7 +216,7 @@ public class PackageConstructor {
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		for (int i=0; i<4; i++)							// ENTERTAINMENT // CAUTION!!! This part looks like shit! Filling out arrays according to our individual. 
+		for (int i=0; i<4; i++)							// ENTERTAINMENT
 		{
 			E[0][i]= Pop[PopIndx][i+8];					// 4 days, 4 iterations, different start place on the string...
 			E[1][i]= Pop[PopIndx][i+12];
@@ -297,8 +293,6 @@ public class PackageConstructor {
 					Utility-= 5;			
 			}
 		}
-		// hm... everything seems to be punished... 
-		// and looks like it is ready... THE FUNCTION is ready to be safely returned where it belongs....
 		return Utility;
 	}
 	
@@ -317,19 +311,27 @@ public class PackageConstructor {
 			mutate(FlagString, Pop, PopInd);			// if "if" is not true, recall this function and hope it won't land on -1 that time (saves us some time)
 	}
 
+	/**
+	 * Takes the bitstring resulting from the genetic algorithm and transforms it
+	 * into our data structure dedicated to packages
+	 */
 	private Package stringToPackage(int[] s, int client, int utility) {
 		Package p = new Package(client);
 		for (int i=0 ; i < s.length ; i++){
 			if (s[i]==1){
 				p.addElement(i);
-				//HermesAgent.addToLog("Adding " + agent.getAuctionTypeAsString(i) + " to package " + (client+1));
 			}
 		}
 		p.addUtility(utility);
-		//HermesAgent.addToLog("Utility of package " + (client+1) + ": " + utility);
 		return p;
 	}
 	
+	/**
+	 * Calculate the average demand of hotels for each day based on a simulation of what the
+	 * other agent's clients' preferences could be, using a Gaussian distribution.
+	 * The resulting vector gives the average number of rooms asked per day, without
+	 * distinguishing between the two possible hotels (depends on agents' strategies)  
+	 */
 	private void calculateAvgDemand(){
 		estimatedHotelDemand = new int[4];
 		Random r = new Random();
@@ -393,6 +395,10 @@ public class PackageConstructor {
 		}
 	}
 	
+	/**
+	 * Calculates the current utility of a package, ie an estimation of the score we would get
+	 * by completing it, considering the current prices of the market.
+	 */
 	public int calculateCurrentUtility(Package currentPackage, int[] whatWeHave) {
 		
 		HermesAgent.addToLog("Utility recalculation with current prices...");
@@ -473,7 +479,11 @@ public class PackageConstructor {
 		return utility;
 	}
 	
-	public Package makePackage(int client, int[] w, boolean useAverage) // That is our global mega-super-thing... 
+	
+	/**
+	 * Base of the PackageConstructor
+	 */
+	public Package makePackage(int client, int[] w, boolean useAverage)
 	{	
 		//If we're using average prices
 		if (useAverage) {
@@ -548,14 +558,14 @@ public class PackageConstructor {
 		int Winner=0;				// for the survival of the fittest
 		
 		int[] TempInd = new int[length];		//Temp Individual
-		createFlagString(FlagString, WhatWeHave);						//	
-		createPop(FlagString, Pop);							//
+		createFlagString(FlagString, WhatWeHave);
+		createPop(FlagString, Pop);
 		
 		for (int i=0; i<500; i++)				// 100 will be replaced by time or just a number of how many iterations we need (u can use "while" there)
 		{
 			for (int j=0; j<pSize; j++)			// for every 1 of 10 hillclimbers
 			{
-				int U1=0; int U2=0;					//Utility vars for comparrison
+				int U1=0; int U2=0;					//Utility vars for comparison
 				
 				for (int k=0; k<length; k++)	// for every gene in [jth] hillclimber
 				{
@@ -581,7 +591,6 @@ public class PackageConstructor {
 		for (int i=0; i<pSize; i++)				// now we have 10 packages... Lets do survival of the fittest contest!!!!
 		{
 			U=evaluationFunction(WhatWeHave, Pop, FlagString, ClientPref, i);
-			//System.out.println(U);
 			if (U>UMax)
 			{
 				UMax=U;
@@ -635,19 +644,9 @@ public class PackageConstructor {
 		{
 			BestPackage[i+8] = Pop[Winner][i];
 		}
-														// Happy end!!! Our winner is forged through struggle and impossible intellectual effort!
-														// Special thanks to anyone reading this for going with it to the end!=)  You're welcome!
 		
-		/*
-		System.out.println("Winner");	// Just checking the winner... Just in case... 			
-		
-		for (int i=0; i<28; i++)
-		{
-			System.out.print(BestPackage[i]);
-		}
-		System.out.println();
-		 */
-		
+		// Happy end!!! Our winner is forged through struggle and impossible intellectual effort!
+												
 		return stringToPackage(BestPackage, client, UMax);
 	}
 

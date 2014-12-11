@@ -29,6 +29,10 @@ public class PackageSet {
 	}
 	
 	
+	/**
+	 * Distributes newly obtained tickets between the packages, giving priority
+	 * to packages with a higher utility
+	 */
 	public synchronized void distribute(int nbToDispatch, int auction){
 		PriorityQueue<Package> queue =  new PriorityQueue<Package>(8, new PackageComparator());
 		for (int i=0 ; i < packageList.length ; i++){
@@ -64,6 +68,10 @@ public class PackageSet {
 
 }
 
+/**
+ * Compare the packages' respective utility to determine which package
+ * has the priority during the dispatch of newly obtained resources
+ */
 class PackageComparator implements Comparator<Package> {
 
     public int compare(Package p1, Package p2) {
